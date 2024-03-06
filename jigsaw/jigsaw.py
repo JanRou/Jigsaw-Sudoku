@@ -1,6 +1,6 @@
 import math
-from Colours import Colours
-from Sudoku import Sudoku
+import colours
+import sudoku
        
 # main
 shape = []
@@ -13,8 +13,8 @@ shape.append( [6,3,5,5,5,7,8,4,8] )
 shape.append( [6,3,6,7,5,7,8,4,8] )
 shape.append( [6,3,6,7,7,7,8,4,8] )
 shape.append( [6,6,6,7,7,7,8,8,8] )
-colours = Colours()
-sudoku = Sudoku( 9, shape, colours)
+colours = colours.Colours()
+sudoku = sudoku.Sudoku( 9, shape, colours)
 sudoku.Set( 0, 0, 1)
 sudoku.Set( 0, 3, 4)
 sudoku.Set( 0, 8, 9)
@@ -47,7 +47,7 @@ sudoku.Set( 8, 8, 5)
 # for string in c.Print():
 #     print(string)
 
-#sudoku.Print()
+sudoku.Print()
 # sudoku.SetPossibleCandidate()
 # sudoku.SetSinglesColumn()
 # HER TIL sudoku.SetSinglesGroup()

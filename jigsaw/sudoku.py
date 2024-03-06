@@ -1,6 +1,7 @@
 import math
-from Cell import Cell
 from sty import fg, bg, ef, rs
+
+from jigsaw.cell import Cell
 
 class Sudoku:
     def __init__(self, d, shape, colours): 
@@ -164,5 +165,5 @@ class Sudoku:
                     firstCell.Number = candidate
 
     def SetSingles(self):
-        self.SetSinglesRow();
-        self.SetSinglesColumn();
+        self.SetSinglesRow()
+        self.SetSinglesColumn()

@@ -1,4 +1,4 @@
-from sty import fg, bg, ef, rs
+from sty import bg
 
 class Colours:
     def __init__(self):

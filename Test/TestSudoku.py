@@ -23,10 +23,10 @@ class TestSudoku(unittest.TestCase):
         dut = Sudoku( 4, shape, colors)
 
         # Act
-        solvedResult = dut.Solved
+        result = dut.Dimension
 
         # Assert
-        self.assertFalse(solvedResult)
+        self.assertEqual(dimension, result)
 
     def testCheckShapeOk(self):
         # Arrange
@@ -67,6 +67,47 @@ class TestSudoku(unittest.TestCase):
 
         # Assert
         self.assertFalse(checkShapeResult)
+
+    def testSolvedFalse(self):
+        # Arrange
+        colors = Colours()
+        dimension = 4
+        shape = []
+        rho = round(math.sqrt(dimension))
+        for r in range(dimension):
+            row = []
+            for c in range(dimension):
+                row.append( ( r // rho )* rho + (c // rho ) )  # operator // is integer division 
+            shape.append(row)
+        dut = Sudoku( 4, shape, colors)
+
+        # Act
+        result = dut.Solved
+
+        # Assert
+        self.assertFalse(result)
+
+    def testSolvedTrue(self):
+        # Arrange
+        colours = Colours()
+        dimension = 4
+        shape = []
+        rho = round(math.sqrt(dimension))
+        for r in range(dimension):
+            row = []
+            for c in range(dimension):
+                row.append( ( r // rho )* rho + (c // rho ) )  # operator // is integer division 
+            shape.append(row)
+        dut = Sudoku( 4, shape, colours)
+        for r in range(dimension):
+            for c in range(dimension):
+                dut.Set( r, c, c+1)
+        # Act
+        result = dut.Solved
+
+        # Assert
+        self.assertTrue(result)
+
 
     # def test(self):
     #     # Arrange

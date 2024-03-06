@@ -1,6 +1,7 @@
 import unittest
 import math
 
+from context import jigsaw
 from jigsaw.colours import Colours
 from jigsaw.cell import Cell
 

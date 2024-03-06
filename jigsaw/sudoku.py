@@ -58,6 +58,7 @@ class Sudoku:
                     break
             if not result:
                 break
+        return result
 
     def Print(self):
         rho = round(math.sqrt(self._dimension))

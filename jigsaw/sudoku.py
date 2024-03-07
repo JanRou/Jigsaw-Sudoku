@@ -59,6 +59,10 @@ class Sudoku:
             if not result:
                 break
         return result
+    
+    @property
+    def GetSudoku(self):
+        return self._sudoku
 
     def Print(self):
         rho = round(math.sqrt(self._dimension))
@@ -106,26 +110,6 @@ class Sudoku:
             self.RemoveCandidatesInRowForNumber( cell.Row, cell.Number)
             self.RemoveCandidatesInGroupForNumber( cell.Group, cell.Number)
 
-    def SetSinglesRow(self):
-        for row in range( 0, self._dimension):
-            singleCandiates = []
-            for column in range( 0, self._dimension):
-                if not self._sudoku[row][column].Solved:
-                    for candidate in self._sudoku[row][column].Candidates:
-                        if singleCandiates.count(candidate) == 0:
-                            singleCandiates.append(candidate)
-            for candidate in singleCandiates:
-                count = 0
-                cell = None
-                for column in range( 0, self._dimension):
-                    if (not self._sudoku[row][column].Solved) and self._sudoku[row][column].Candidates.count(candidate) == 1: 
-                        count += 1
-                        if count==1:
-                            cell = self._sudoku[row][column]
-                if count == 1:
-                    # yahoo got one
-                    cell.Number = candidate
-
     def SetSinglesColumn(self):
         for column in range( 0, self._dimension):
             singleCandiates = []
@@ -136,15 +120,35 @@ class Sudoku:
                             singleCandiates.append(candidate)
             for candidate in singleCandiates:
                 count = 0
-                cell = None
+                firstCell = None
                 for row in range( 0, self._dimension):
-                    if (not self._sudoku[row][column].Solved) and self._sudoku[row][column].Candidates.count(candidate) == 1:
+                    if (not self._sudoku[row][column].Solved) and candidate in self._sudoku[row][column].Candidates:
                         count += 1
                         if count==1:
-                            cell = self._sudoku[row][column]
+                            firstCell = self._sudoku[row][column] # set first just in case it's the only one
                 if count == 1:
-                    # yahoo got one
-                    cell.Number = candidate
+                    # got one
+                    firstCell.Number = candidate
+
+    def SetSinglesRow(self):
+        for row in range( 0, self._dimension):
+            singleCandiates = []
+            for column in range( 0, self._dimension):
+                if not self._sudoku[row][column].Solved:
+                    for candidate in self._sudoku[row][column].Candidates:
+                        if singleCandiates.count(candidate) == 0:
+                            singleCandiates.append(candidate)
+            for candidate in singleCandiates:
+                count = 0
+                firstCell = None
+                for column in range( 0, self._dimension):
+                    if (not self._sudoku[row][column].Solved) and candidate in self._sudoku[row][column].Candidates: 
+                        count += 1
+                        if count==1:
+                            firstCell = self._sudoku[row][column]  # set first just in case it's the only one
+                if count == 1:
+                    # got one
+                    firstCell.Number = candidate
 
     def SetSinglesGroup(self):
         for group in range( 0, self._dimension):
@@ -156,15 +160,17 @@ class Sudoku:
                             singleCandiates.append(candidate)
             for candidate in singleCandiates:
                 count = 0
-                cell = None
+                firstCell = None
                 for cell in self._groups[group]:
-                    if (not cell.Solved) and cell.Number == candidate:
+                    if (not cell.Solved) and candidate in cell.Candidates:
                         count += 1
-                        firstCell = cell
+                        if count==1:
+                            firstCell = cell  # set first just in case it's the only one
                 if count == 1:
-                    # yahoo got one
+                    # got one
                     firstCell.Number = candidate
 
     def SetSingles(self):
         self.SetSinglesRow()
         self.SetSinglesColumn()
+        self.SetSinglesGroup()        

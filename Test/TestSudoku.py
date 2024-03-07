@@ -10,7 +10,7 @@ if __name__ == '__main__':
 
 class TestSudoku(unittest.TestCase):
 
-    def testConstructor(self):
+    def testConstructorOk(self):
         # Arrange
         colours = Colours()
         dimension = 4
@@ -47,17 +47,18 @@ class TestSudoku(unittest.TestCase):
             for c in range(dimension):
                 row.append( ( r // rho )* rho + (c // rho ) )  # operator // is integer division 
             shape.append(row)
-        dut = Sudoku( 4, shape, colors)
+        dut = Sudoku( dimension, shape, colors)
 
         # Act
         checkShapeResult = dut.CheckShape(shape)
 
         # Assert
-        self.assertTrue(checkShapeResult)
+        self.assertTrue(checkShapeResult[0])
+        self.assertEqual( "", checkShapeResult[1])
 
     def testCheckShapeFail(self):
         # Arrange
-        colors = Colours()
+        colours = Colours()
         dimension = 4
         shape = []
         rho = round(math.sqrt(dimension))
@@ -66,7 +67,7 @@ class TestSudoku(unittest.TestCase):
             for c in range(dimension):
                 row.append( ( r // rho )* rho + (c // rho ) )  # operator // is integer division 
             shape.append(row)        
-        dut = Sudoku( 4, shape, colors)
+        dut = Sudoku( dimension, shape, colours)
         # change shape to a failing shape
         shape[dimension-1][dimension-1] = 2 # overwrites 3 with 2
 
@@ -74,7 +75,27 @@ class TestSudoku(unittest.TestCase):
         checkShapeResult = dut.CheckShape(shape)
 
         # Assert
-        self.assertFalse(checkShapeResult)
+        self.assertFalse(checkShapeResult[0])
+        self.assertNotEqual("", checkShapeResult[1])
+
+    def testConstructorFails(self):
+        # Arrange
+        colours = Colours()
+        dimension = 4
+        shape = []
+        rho = round(math.sqrt(dimension))
+        for r in range(dimension):
+            row = []
+            for c in range(dimension):
+                row.append( ( r // rho )* rho + (c // rho ) )  # operator // is integer division 
+            shape.append(row)        
+        dut = Sudoku( 4, shape, colours)
+        # change shape to a failing shape
+        shape[dimension-1][dimension-1] = 2 # overwrites 3 with 2
+
+        # Act and Assert
+        with self.assertRaises(ValueError):
+            dut = Sudoku( dimension, shape, colours)
 
     def testSolvedFalse(self):
         # Arrange

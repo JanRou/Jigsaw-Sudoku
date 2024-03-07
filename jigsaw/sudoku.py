@@ -10,6 +10,9 @@ class Sudoku:
         # where 0 is first group at upper left corner and n is last
         self._colours = colours
         self._dimension = d
+        shapeCheck = self.CheckShape(shape) # returns tuple (bool, message)
+        if not shapeCheck[0]:
+            raise ValueError("Shape check failed: " + shapeCheck[1])
         self._groups = []  # the soudoku arranged by groups
         for rw in range( 0, self._dimension):
             self._groups.append([])
@@ -22,9 +25,10 @@ class Sudoku:
                 self._groups[shape[rw][col]].append(cell)
             self._sudoku.append(row)
 
-    def CheckShape(self, shape):
+    def CheckShape(self, shape): # returns tuple (bool, message)
         # each group index from 0 to dimension-1 must appear dimension times in shape
         groupIndexes = {} # dictionary to hold group indexes and counts as values
+        msg = ""
         for r in range( 0, self._dimension):
             for c in range( 0, self._dimension):
                 if shape[r][c] in groupIndexes:
@@ -37,11 +41,13 @@ class Sudoku:
         for group in range(self._dimension):
             result = result and group in groupIndexes
             if not result: # group index missing
+                msg = "Group index " + str(group) + " is not found in shape"
                 break
             result = result and groupIndexes[group] == self._dimension
             if not result: # group index count not equal to dimension
+                msg = "Count of group " + str(group) + " indexes is not equal to dimension, " + str(self._dimension)
                 break
-        return result
+        return (result, msg)
 
     @property
     def Dimension(self):

@@ -67,17 +67,34 @@ class Sudoku:
         return result
     
     @property
+    def Changed(self):
+        result = False
+        for r in range(self._dimension):
+            for c in range(self._dimension):
+                result = result or self._sudoku[r][c].Changed
+                if result:
+                    break
+            if result:
+                break
+        return result
+
+    def DoChange(self):
+        for r in range(self._dimension):
+            for c in range(self._dimension):
+                self._sudoku[r][c].DoChange()
+
+    @property
     def GetSudoku(self):
         return self._sudoku
 
-    def Print(self):
+    def Print(self, changed=False):
         rho = round(math.sqrt(self._dimension))
         for r in range( 0, self._dimension):
             strings = []
             for i in range(rho):
                 strings.append("")
             for c in range( 0, self._dimension):
-                cellStrings = self._sudoku[r][c].Print()
+                cellStrings = self._sudoku[r][c].Print(changed)
                 for i in range(rho):
                     strings[i] = strings[i] + cellStrings[i]
             for i in range(rho):

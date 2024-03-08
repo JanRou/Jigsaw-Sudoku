@@ -1,7 +1,48 @@
 import math
-import colours
-import sudoku
+#fails from jigsaw.colours import Colours
+#fails from jigsaw.sudoku import Sudoku
+#fails import jigsaw.colours
+#fails import jigsaw.sudoku
+from jigsaw.colours import Colours
+from jigsaw.sudoku import Sudoku
        
+
+def takeStep(step):
+    answer = input("Next step " + step + " Y/N?")
+    return (answer == "Y") or (answer=="y")
+
+def solve(sudoku):
+    steps = {0:"set possible", 1: "set single candidate row", 2: "set single candidate column"
+             , 3: "set single candidate group"}
+    state = 0
+    sudoku.Print()        
+    while (not sudoku.Solved and takeStep(steps[state])):
+        sudoku.DoChange()
+        match state:
+            case 0:
+                sudoku.SetPossibleCandidate()
+                if sudoku.Changed:
+                    state = 0
+                else:
+                    state = 1
+            case 1:
+                sudoku.SetSinglesRow()
+                if sudoku.Changed:
+                    state = 0
+                else:
+                    state = 2
+            case 2:
+                sudoku.SetSinglesColumn()
+                if sudoku.Changed:
+                    state = 0
+                else:
+                    state = 3
+            case 3:
+                sudoku.SetSinglesGroup()
+                state = 0
+                
+        sudoku.Print(True)        
+
 # main
 shape = []
 shape.append( [0,0,0,1,1,1,2,2,2] )
@@ -13,8 +54,8 @@ shape.append( [6,3,5,5,5,7,8,4,8] )
 shape.append( [6,3,6,7,5,7,8,4,8] )
 shape.append( [6,3,6,7,7,7,8,4,8] )
 shape.append( [6,6,6,7,7,7,8,8,8] )
-colours = colours.Colours()
-sudoku = sudoku.Sudoku( 9, shape, colours)
+colours = Colours()
+sudoku = Sudoku( 9, shape, colours)
 sudoku.Set( 0, 0, 1)
 sudoku.Set( 0, 3, 4)
 sudoku.Set( 0, 8, 9)
@@ -36,19 +77,5 @@ sudoku.Set( 7, 3, 1)
 sudoku.Set( 8, 0, 8)
 sudoku.Set( 8, 5, 9)
 sudoku.Set( 8, 8, 5)
-
-# c = Cell(9, 0, 0, 0, colours)
-# for string in c.Print():
-#     print(string)
-# c.Remove(5)
-# for string in c.Print():
-#     print(string)
-# c.Number = 1
-# for string in c.Print():
-#     print(string)
-
-sudoku.Print()
-# sudoku.SetPossibleCandidate()
-# sudoku.SetSinglesColumn()
-# HER TIL sudoku.SetSinglesGroup()
-#sudoku.Print()
+sudoku.DoChange() # set the changes
+solve(sudoku)

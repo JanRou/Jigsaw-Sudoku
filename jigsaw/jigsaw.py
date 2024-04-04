@@ -1,49 +1,46 @@
 import math
-#fails from jigsaw.colours import Colours
-#fails from jigsaw.sudoku import Sudoku
-#fails import jigsaw.colours
-#fails import jigsaw.sudoku
+
 from jigsaw.colours import Colours
-from jigsaw.sudoku import Sudoku
-       
+from jigsaw.sudoku import JigsawSudoku
+from jigsaw.window import Window
 
-def takeStep(step):
-    answer = input("Next step " + step + " Y/N?")
-    return (answer == "Y") or (answer=="y")
+# def takeStep(step):
+#     answer = input("Next step " + step + " Y/N?")
+#     return (answer == "Y") or (answer=="y")
 
-def solve(sudoku):
-    steps = {0:"set possible", 1: "set single candidate row", 2: "set single candidate column"
-             , 3: "set single candidate group"}
-    state = 0
-    sudoku.Print()        
-    while (not sudoku.Solved and takeStep(steps[state])):
-        sudoku.DoChange()
-        match state:
-            case 0:
-                sudoku.SetPossibleCandidate()
-                if sudoku.Changed:
-                    state = 0
-                else:
-                    state = 1
-            case 1:
-                sudoku.SetSinglesRow()
-                if sudoku.Changed:
-                    state = 0
-                else:
-                    state = 2
-            case 2:
-                sudoku.SetSinglesColumn()
-                if sudoku.Changed:
-                    state = 0
-                else:
-                    state = 3
-            case 3:
-                sudoku.SetSinglesGroup()
-                state = 0
+# def solve(sudoku):
+#     steps = {0:"set possible", 1: "set single candidate row", 2: "set single candidate column"
+#              , 3: "set single candidate group"}
+#     state = 0
+#     sudoku.Print()        
+#     while (not sudoku.Solved and takeStep(steps[state])):
+#         sudoku.DoChange()
+#         match state:
+#             case 0:
+#                 sudoku.SetPossibleCandidate()
+#                 if sudoku.Changed:
+#                     state = 0
+#                 else:
+#                     state = 1
+#             case 1:
+#                 sudoku.SetSinglesRow()
+#                 if sudoku.Changed:
+#                     state = 0
+#                 else:
+#                     state = 2
+#             case 2:
+#                 sudoku.SetSinglesColumn()
+#                 if sudoku.Changed:
+#                     state = 0
+#                 else:
+#                     state = 3
+#             case 3:
+#                 sudoku.SetSinglesGroup()
+#                 state = 0
                 
-        sudoku.Print(True)        
+#         sudoku.Print(True)        
 
-# main
+#main
 shape = []
 shape.append( [0,0,0,1,1,1,2,2,2] )
 shape.append( [0,3,0,1,1,1,2,4,2] )
@@ -55,7 +52,7 @@ shape.append( [6,3,6,7,5,7,8,4,8] )
 shape.append( [6,3,6,7,7,7,8,4,8] )
 shape.append( [6,6,6,7,7,7,8,8,8] )
 colours = Colours()
-sudoku = Sudoku( 9, shape, colours)
+sudoku = JigsawSudoku( 9, shape, colours)
 sudoku.Set( 0, 0, 1)
 sudoku.Set( 0, 3, 4)
 sudoku.Set( 0, 8, 9)
@@ -78,4 +75,6 @@ sudoku.Set( 8, 0, 8)
 sudoku.Set( 8, 5, 9)
 sudoku.Set( 8, 8, 5)
 sudoku.DoChange() # set the changes
-solve(sudoku)
+
+window = Window(sudoku)
+window.mainloop()

@@ -3,7 +3,7 @@ import math
 
 from context import jigsaw
 from jigsaw.colours import Colours
-from jigsaw.cell import Cell
+from jigsaw.cell import JigsawCell
 
 if __name__ == '__main__':
     unittest.main()
@@ -20,7 +20,7 @@ class TestCell(unittest.TestCase):
         expectedcandidates = []
         for c in range(1,dimension+1):
             expectedcandidates.append(c)
-        dut = Cell( dimension, row, column, group, colors)
+        dut = JigsawCell( dimension, row, column, group, colors)
 
         # Act
         solvedResult = dut.Solved
@@ -47,13 +47,13 @@ class TestCell(unittest.TestCase):
         # removes 1, so start from 2
         for c in range( 2, dimension+1):
             expectedcandidates.append(c)
-        dut = Cell( dimension, row, column, group, colors)
+        dut = JigsawCell( dimension, row, column, group, colors)
 
         # Act
         dut.Remove(1)
 
         # Assert
-        self.assertEqual(expectedcandidates, dut.Candidates)
+        self.assertEqual(expectedcandidates, dut.NewCandidates)
 
     def testRemoveFail(self):
         # Arrange
@@ -64,7 +64,7 @@ class TestCell(unittest.TestCase):
         column = 0
         numberLow = 0
         numberHigh = 5
-        dut = Cell( dimension, row, column, group, colors)
+        dut = JigsawCell( dimension, row, column, group, colors)
 
         # Assert
         with self.assertRaises(ValueError):
@@ -81,11 +81,13 @@ class TestCell(unittest.TestCase):
         row = 0
         column = 0
         number = 2
-        dut = Cell( dimension, row, column, group, colors)
+        dut = JigsawCell( dimension, row, column, group, colors)
 
         # Act
         getResult1 = dut.Number
         dut.Number = number
+        changeResult = dut.Changed
+        dut.DoChange()
         getResult2 = dut.Number
         solvedResult = dut.Solved
 
@@ -103,7 +105,7 @@ class TestCell(unittest.TestCase):
         column = 0
         numberLow = 0
         numberHigh = 5
-        dut = Cell( dimension, row, column, group, colors)
+        dut = JigsawCell( dimension, row, column, group, colors)
 
         # Assert
         with self.assertRaises(ValueError):
@@ -120,10 +122,10 @@ class TestCell(unittest.TestCase):
         group = 0
         row = 0
         column = 0
-        dut = Cell( dimension, row, column, group, colors)
+        dut = JigsawCell( dimension, row, column, group, colors)
 
         # Act
-        result = dut.Print()
+        result = dut.Print(False)
 
         # Assert
         self.assertEqual( round(math.sqrt(dimension)), len(result))

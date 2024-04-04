@@ -3,7 +3,7 @@ import math
 
 from context import jigsaw
 from jigsaw.colours import Colours
-from jigsaw.sudoku import Sudoku
+from jigsaw.sudoku import JigsawSudoku
 
 if __name__ == '__main__':
     unittest.main()
@@ -18,7 +18,7 @@ class TestSudoku(unittest.TestCase):
 
         # Act
         resultDim = dut.Dimension
-        resultSudoku = dut.GetSudoku
+        resultSudoku = dut.Sudoku
 
         # Assert
         # 4x4 sudoku constructed
@@ -47,7 +47,7 @@ class TestSudoku(unittest.TestCase):
             for c in range(dimension):
                 row.append( ( r // rho )* rho + (c // rho ) )  # operator // is integer division 
             shape.append(row)
-        dut = Sudoku( dimension, shape, colors)
+        dut = JigsawSudoku( dimension, shape, colors)
 
         # Act
         checkShapeResult = dut.CheckShape(shape)
@@ -67,7 +67,7 @@ class TestSudoku(unittest.TestCase):
             for c in range(dimension):
                 row.append( ( r // rho )* rho + (c // rho ) )  # operator // is integer division 
             shape.append(row)        
-        dut = Sudoku( dimension, shape, colours)
+        dut = JigsawSudoku( dimension, shape, colours)
         # change shape to a failing shape
         shape[dimension-1][dimension-1] = 2 # overwrites 3 with 2
 
@@ -89,13 +89,13 @@ class TestSudoku(unittest.TestCase):
             for c in range(dimension):
                 row.append( ( r // rho )* rho + (c // rho ) )  # operator // is integer division 
             shape.append(row)        
-        dut = Sudoku( 4, shape, colours)
+        dut = JigsawSudoku( 4, shape, colours)
         # change shape to a failing shape
         shape[dimension-1][dimension-1] = 2 # overwrites 3 with 2
 
         # Act and Assert
         with self.assertRaises(ValueError):
-            dut = Sudoku( dimension, shape, colours)
+            dut = JigsawSudoku( dimension, shape, colours)
 
     def testSolvedFalse(self):
         # Arrange
@@ -108,7 +108,7 @@ class TestSudoku(unittest.TestCase):
             for c in range(dimension):
                 row.append( ( r // rho )* rho + (c // rho ) )  # operator // is integer division 
             shape.append(row)
-        dut = Sudoku( 4, shape, colors)
+        dut = JigsawSudoku( 4, shape, colors)
 
         # Act
         result = dut.Solved
@@ -127,11 +127,13 @@ class TestSudoku(unittest.TestCase):
             for c in range(dimension):
                 row.append( ( r // rho )* rho + (c // rho ) )  # operator // is integer division 
             shape.append(row)
-        dut = Sudoku( 4, shape, colours)
+        dut = JigsawSudoku( 4, shape, colours)
         for r in range(dimension):
             for c in range(dimension):
                 dut.Set( r, c, c+1)
-        # Act
+        dut.DoChange()
+
+        # Act            
         result = dut.Solved
 
         # Assert
@@ -145,7 +147,8 @@ class TestSudoku(unittest.TestCase):
 
         # Act
         dut.RemoveCandidatesInColumnForNumber( 0, 4)
-        result = dut.GetSudoku
+        dut.DoChange()
+        result = dut.Sudoku
 
         # Assert
         # 4x4 test sudoku after removal of candidates
@@ -170,7 +173,8 @@ class TestSudoku(unittest.TestCase):
 
         # Act
         dut.RemoveCandidatesInRowForNumber( 0, 3)
-        result = dut.GetSudoku
+        dut.DoChange()
+        result = dut.Sudoku
 
         # Assert
         # 4x4 test sudoku after removal of candidates
@@ -195,7 +199,8 @@ class TestSudoku(unittest.TestCase):
 
         # Act
         dut.RemoveCandidatesInGroupForNumber( 0, 4)
-        result = dut.GetSudoku
+        dut.DoChange()
+        result = dut.Sudoku
 
         # Assert
         # 4x4 test sudoku after removal of candidates
@@ -220,7 +225,8 @@ class TestSudoku(unittest.TestCase):
 
         # Act
         dut.SetPossibleCandidate()
-        result = dut.GetSudoku
+        dut.DoChange()
+        result = dut.Sudoku
 
         # Assert
         # 4x4 sudoku after SetPossible
@@ -245,12 +251,13 @@ class TestSudoku(unittest.TestCase):
         colours = Colours()
         dimension = 4
         dut = self.create4x4TestSudoku( dimension, colours)
-        sudoku = dut.GetSudoku
+        sudoku = dut.Sudoku
         sudoku[0][0].Remove(3)
         sudoku[0][0].Remove(4)
         sudoku[2][0].Remove(2)
         sudoku[2][0].Remove(4)
         sudoku[3][0].Number = 1
+        dut.DoChange()
         # 4x4 test sudoku before set singles in columns. It is not a real situation
         #    Sudoku     Candidates  
         #    0 1 2 3    0
@@ -264,7 +271,8 @@ class TestSudoku(unittest.TestCase):
 
         # Act
         dut.SetSinglesColumn()
-        result = dut.GetSudoku
+        dut.DoChange()
+        result = dut.Sudoku
 
         # Assert
         # 4x4 test sudoku after set singles in columns.
@@ -291,13 +299,14 @@ class TestSudoku(unittest.TestCase):
         colours = Colours()
         dimension = 4
         dut = self.create4x4TestSudoku( dimension, colours)
-        sudoku = dut.GetSudoku
+        sudoku = dut.Sudoku
         sudoku[0][0].Remove(3)
         sudoku[0][0].Remove(1)
         sudoku[0][1].Remove(2)
         sudoku[0][1].Remove(4)
         sudoku[0][3].Remove(1)
         sudoku[0][3].Remove(2)
+        dut.DoChange()        
         # 4x4 test sudoku before set singles in columns. It is not a real situation
         #    Sudoku     Candidates  
         #    0 1 2 3    0
@@ -311,7 +320,8 @@ class TestSudoku(unittest.TestCase):
 
         # Act
         dut.SetSinglesRow()
-        result = dut.GetSudoku
+        dut.DoChange()
+        result = dut.Sudoku
 
         # Assert
         # 4x4 test sudoku after set singles in columns.
@@ -338,13 +348,14 @@ class TestSudoku(unittest.TestCase):
         colours = Colours()
         dimension = 4
         dut = self.create4x4TestSudoku( dimension, colours)
-        sudoku = dut.GetSudoku
+        sudoku = dut.Sudoku
         sudoku[0][0].Remove(3)
         sudoku[0][0].Remove(1)
         sudoku[0][1].Remove(2)
         sudoku[0][1].Remove(3)
         sudoku[1][1].Remove(1)
         sudoku[1][1].Remove(2)
+        dut.DoChange()
         # 4x4 test sudoku before set singles in columns. It is not a real situation
         #    Sudoku     Candidates  
         #    0 1 2 3    0
@@ -358,7 +369,8 @@ class TestSudoku(unittest.TestCase):
 
         # Act
         dut.SetSinglesGroup()
-        result = dut.GetSudoku
+        dut.DoChange()
+        result = dut.Sudoku
 
         # Assert
         # 4x4 test sudoku after set singles in columns.
@@ -403,11 +415,12 @@ class TestSudoku(unittest.TestCase):
                 row.append( ( r // rho )* rho + (c // rho ) )  # operator // is integer division 
             shape.append(row)
 
-        sudoku= Sudoku( dimension, shape, colours)
+        sudoku= JigsawSudoku( dimension, shape, colours)
         sudoku.Set( 0, 2, 3)
         sudoku.Set( 1, 0, 4)
         sudoku.Set( 2, 3, 1)
         sudoku.Set( 3, 1, 4)
+        sudoku.DoChange()
         return sudoku
 
     # def test(self):

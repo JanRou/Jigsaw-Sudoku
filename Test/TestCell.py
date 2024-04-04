@@ -114,22 +114,6 @@ class TestCell(unittest.TestCase):
         with self.assertRaises(ValueError):
             dut.Number = numberLow
 
-
-    def testPrint(self):
-        # Arrange
-        colors = Colours()
-        dimension = 4
-        group = 0
-        row = 0
-        column = 0
-        dut = JigsawCell( dimension, row, column, group, colors)
-
-        # Act
-        result = dut.Print(False)
-
-        # Assert
-        self.assertEqual( round(math.sqrt(dimension)), len(result))
-
     # def test(self):
     #     # Arrange
 

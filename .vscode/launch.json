@@ -9,7 +9,7 @@
             "type": "debugpy",
             "request": "launch",
             //"program": "${file}",
-            "module": "jigsaw.jigsaw",
+            "module": "sudoku",
             "console": "integratedTerminal",            
         },
         {

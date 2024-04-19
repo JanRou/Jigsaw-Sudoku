@@ -1,147 +1,5 @@
-import math
-from sty import fg, bg, ef, rs
+from basesudoku.basesudoku import BaseSudoku
 from jigsaw.cell import JigsawCell
-
-class BaseSudoku:
-    def __init__(self, d, createCell):
-        self._dimension = d
-        self._sudoku = []  # the sudoku arranged by rows an columns
-        for rw in range( 0, self._dimension):
-            row = []            
-            for col in range( 0, self._dimension):
-                cell = createCell(self._dimension, rw, col)
-                row.append( cell )
-            self._sudoku.append(row)
-
-    @property
-    def Dimension(self):
-        return self._dimension
-    
-    @property
-    def Solved(self):
-        # TODO check that the sudoku is really solved not just all cells have a number set!
-        result = True
-        for r in range(self._dimension):
-            for c in range(self._dimension):
-                result = result and self._sudoku[r][c].Solved
-                if not result:
-                    break
-            if not result:
-                break
-        return result
-    
-    @property
-    def Changed(self):
-        result = False
-        for r in range(self._dimension):
-            for c in range(self._dimension):
-                result = result or self._sudoku[r][c].Changed
-                if result:
-                    break
-            if result:
-                break
-        return result
-
-    def DoChange(self):
-        for r in range(self._dimension):
-            for c in range(self._dimension):
-                self._sudoku[r][c].DoChange()
-
-    def GetCell(self, r, c):
-        return self._sudoku[r][c]
-
-    @property
-    def Sudoku(self):
-        return self._sudoku
-
-    def Print(self, changed=False):
-        rho = round(math.sqrt(self._dimension))
-        for r in range( 0, self._dimension):
-            strings = []
-            for i in range(rho):
-                strings.append("")
-            for c in range( 0, self._dimension):
-                cellStrings = self._sudoku[r][c].Print(changed)
-                for i in range(rho):
-                    strings[i] = strings[i] + cellStrings[i]
-            for i in range(rho):
-                print( strings[i] )
-
-    def Set( self, r, c, n):
-        self._sudoku[r][c].Number = n
-
-    def Get( self, r, c):
-        return self._sudoku[r][c].Number
-
-    def RemoveCandidatesInColumnForNumber( self, column, number):
-        # remove candidates in column
-        for row in range( 0, self._dimension):
-            self._sudoku[row][column].Remove(number)        
-
-    def RemoveCandidatesInRowForNumber( self, row, number):
-        # remove candidates in column
-        for column in range( 0, self._dimension):
-            self._sudoku[row][column].Remove(number)        
-
-    def SetPossibleCandidateBase(self, removeCandidatesHook):
-        # find solved
-        cellsSolved = []
-        for row in range( 0, self._dimension):
-            for column in range( 0, self._dimension):
-                if self._sudoku[row][column].Solved:
-                    cellsSolved.append(self._sudoku[row][column])
-
-        # remove candidates
-        for cell in cellsSolved:
-            self.RemoveCandidatesInColumnForNumber( cell.Column, cell.Number)
-            self.RemoveCandidatesInRowForNumber( cell.Row, cell.Number)
-            removeCandidatesHook( cell )
-
-    def SetSinglesColumn(self):
-        for column in range( 0, self._dimension):
-            singleCandidates = []
-            for row in range( 0, self._dimension):
-                if not self._sudoku[row][column].Solved:
-                    for candidate in self._sudoku[row][column].Candidates:
-                        if singleCandidates.count(candidate) == 0:
-                            singleCandidates.append(candidate)
-            for candidate in singleCandidates:
-                count = 0
-                firstCell = None
-                for row in range( 0, self._dimension):
-                    if (not self._sudoku[row][column].Solved) and candidate in self._sudoku[row][column].Candidates:
-                        count += 1
-                        if count==1:
-                            firstCell = self._sudoku[row][column] # set first just in case it's the only one
-                if count == 1:
-                    # got one
-                    firstCell.Number = candidate
-
-    def SetSinglesRow(self):
-        for row in range( 0, self._dimension):
-            singleCandidates = []
-            for column in range( 0, self._dimension):
-                if not self._sudoku[row][column].Solved:
-                    for candidate in self._sudoku[row][column].Candidates:
-                        if singleCandidates.count(candidate) == 0:
-                            singleCandidates.append(candidate)
-            for candidate in singleCandidates:
-                count = 0
-                firstCell = None
-                for column in range( 0, self._dimension):
-                    if (not self._sudoku[row][column].Solved) and candidate in self._sudoku[row][column].Candidates: 
-                        count += 1
-                        if count==1:
-                            firstCell = self._sudoku[row][column]  # set first just in case it's the only one
-                if count == 1:
-                    # got one
-                    firstCell.Number = candidate
-
-    def SetSinglesBase(self, setSinglesHook):
-        self.SetSinglesRow()
-        self.SetSinglesColumn()
-        setSinglesHook()
-
 
 class JigsawSudoku(BaseSudoku): # TODO inherit from BaseSudoku
     def __init__(self, d, shape, colours): 
@@ -157,8 +15,8 @@ class JigsawSudoku(BaseSudoku): # TODO inherit from BaseSudoku
         shapeCheck = self.CheckShape(shape) # returns tuple (bool, message)
         if not shapeCheck[0]:
             raise ValueError("Shape check failed: " + shapeCheck[1])
-        self.steps = {0:"set possible", 1: "set single candidate row", 2: "set single candidate column"
-        , 3: "set single candidate group"}
+        self.steps = { 0: "Try: set single candidates as solution", 1: "Try: find possible candidates"
+                      , 2: "Try: find single candidates", 3: "Update sudoku" }
         self.state = 0
 
     # implements abstract method in base class
@@ -205,8 +63,8 @@ class JigsawSudoku(BaseSudoku): # TODO inherit from BaseSudoku
     def RemoveCandidatesHook( self, cell):
         self.RemoveCandidatesInGroupForNumber( cell.Group, cell.Number)
 
-    def SetPossibleCandidate(self):
-        self.SetPossibleCandidateBase(self.RemoveCandidatesHook)
+    def FindPossibleCandidates(self):
+        self.FindPossibleCandidatesBase(self.RemoveCandidatesHook)
 
     def SetSinglesGroup(self):
         for group in range( 0, self._dimension):
@@ -229,30 +87,29 @@ class JigsawSudoku(BaseSudoku): # TODO inherit from BaseSudoku
                     firstCell.Number = candidate
 
     def SetSingles(self):
-        self.SetSinglesBase(self.SetSinglesGroup)
+        self.FindSinglesBase(self.SetSinglesGroup)
         
     def TakeStep(self):
-        if not self.Solved:
-            self.DoChange()
+        result = self.steps[self.state]
+        if not self.Solved:            
             match self.state:
                 case 0:
-                    self.SetPossibleCandidate()
+                    self.SetSingleCandidatesAsnewNumber()
                     if self.Changed:
-                        self.state = 0
+                        self.state = 3
                     else:
                         self.state = 1
                 case 1:
-                    self.SetSinglesRow()
+                    self.FindPossibleCandidates()
                     if self.Changed:
-                        self.state = 0
+                        self.state = 3
                     else:
                         self.state = 2
                 case 2:
-                    self.SetSinglesColumn()
-                    if self.Changed:
-                        self.state = 0
-                    else:
-                        self.state = 3
+                    self.SetSingles()
+                    self.state = 3
                 case 3:
-                    self.SetSinglesGroup()
+                    self.DoChange()
                     self.state = 0
+
+        return result

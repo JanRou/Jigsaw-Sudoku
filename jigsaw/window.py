@@ -4,7 +4,7 @@ from tkinter import font
 from jigsaw.sudoku import JigsawSudoku
 import math
 
-class Window(Tk):
+class JigsawWindow(Tk):
     def __init__(self, sudoku):
         super().__init__()
         self.title("Jigsaw Sudoku Solver")
@@ -22,22 +22,31 @@ class Window(Tk):
         self.rightFrame = RightFrame( self.mainFrame, 600, 600, sudoku, CellColours() )
 
     def step(self):
-        self.sudoku.TakeStep()
+        result = self.sudoku.TakeStep()
         self.rightFrame.show()
+        return result
 
 class LeftFrame(ttk.Frame):
     def __init__(self, root, w, h, step):
         super().__init__( root, width=w, height=h )
 
         self.grid(row=0, column=0, padx=10, pady=5)
-        self.headLabel=ttk.Label( self, text="Solve sudoku").grid(row=0, column=0, padx=5, pady=5)
-        self.button = ttk.Button( self, text="Next step >", command=self.takeNextStep).grid(row=1, column=0, padx=5, pady=5)
+        self.headLabel=ttk.Label( self
+                , text="Solve jigsaw sudoku").grid(row=0, column=0, padx=5, pady=5)
+        self.button = ttk.Button( self, text="Next step >"
+                , command=self.takeNextStep).grid(row=1, column=0, padx=5, pady=5)
+        self.results = []
+        self.resultsVar = StringVar(value=self.results)
+        self.listbox = Listbox(self, height=20, width= 30
+                , listvariable=self.resultsVar).grid(row=2, column=0, padx=5, pady=5)
 
         # TODO bindings for MVC
         self.step = step
 
     def takeNextStep(self):
-        self.step()
+        result = self.step()
+        self.results.append(result)
+        self.resultsVar.set(self.results)
 
 class RightFrame(ttk.Frame):
     def __init__(self, root, w, h, sudoku, colours):
@@ -50,7 +59,6 @@ class RightFrame(ttk.Frame):
         for row in range(self.sudoku.Dimension):
             rowView = []
             for col in range(self.sudoku.Dimension):                
-                #cellView = self.createCellView(self.sudoku.Get(row,col))
                 cell = self.sudoku.GetCell(row,col)
                 cellView = SudokuCellView(self, self.colours.get(cell.Group), cell)
                 cellView.Show()

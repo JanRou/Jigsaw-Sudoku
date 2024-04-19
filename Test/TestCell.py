@@ -8,7 +8,7 @@ from jigsaw.cell import JigsawCell
 if __name__ == '__main__':
     unittest.main()
     
-class TestCell(unittest.TestCase):
+class TestJigsawCell(unittest.TestCase):
 
     def testConstructor(self):
         # Arrange
@@ -113,6 +113,34 @@ class TestCell(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             dut.Number = numberLow
+
+    def testSetSingleCandidateToNewNumberOk(self):
+        # Arrange
+        colors = Colours()
+        dimension = 4
+        group = 0
+        row = 0
+        column = 0
+        dut = JigsawCell( dimension, row, column, group, colors)
+
+        # Act
+        dut.Remove(1)
+        dut.Remove(2)
+        dut.Remove(3)
+        resultNewCandidates = dut.NewCandidates
+        dut.DoChange()
+        resultCandidates = dut.Candidates
+        dut.SetSingleCandidateToNewNumber()
+        resultNewNumber = dut.NewNumber
+        dut.DoChange()
+
+        # Assert
+        self.assertEqual( 1, len(resultNewCandidates))
+        self.assertIn( 4, resultNewCandidates)
+        self.assertEqual( 1, len(resultCandidates))
+        self.assertIn( 4, resultCandidates)
+        self.assertEqual( 4, resultNewNumber)
+        self.assertTrue( dut.Solved)
 
     # def test(self):
     #     # Arrange

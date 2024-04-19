@@ -8,7 +8,7 @@ from jigsaw.sudoku import JigsawSudoku
 if __name__ == '__main__':
     unittest.main()
 
-class TestSudoku(unittest.TestCase):
+class TestJigsawSudoku(unittest.TestCase):
 
     def testConstructorOk(self):
         # Arrange
@@ -217,15 +217,14 @@ class TestSudoku(unittest.TestCase):
         self.assertEqual([1,2,3], result[0][1].Candidates)
         self.assertEqual([1,2,3], result[1][1].Candidates)
 
-    def testSetPossibleCandidate(self):
+    def testFindPossibleCandidates(self):
         # Arrange
         colours = Colours()
         dimension = 4
         dut = self.create4x4TestSudoku( dimension, colours)
 
         # Act
-        dut.SetPossibleCandidate()
-        dut.DoChange()
+        dut.FindPossibleCandidates()
         result = dut.Sudoku
 
         # Assert
@@ -239,14 +238,16 @@ class TestSudoku(unittest.TestCase):
         # 2 ! . ! .1!  !(2,3)  !(1,2,3)!(2,4).-    !
         # 3 ! .4!2. !  !(1,2,3)!-      !-    .(2,3)!
         #   ---------  -----------------------------
-        self.assertTrue(    result[1][3].Solved)
-        self.assertEqual(2, result[1][3].Number)
-        self.assertTrue(    result[3][2].Solved)
-        self.assertEqual(2, result[3][2].Number)
-        self.assertEqual([1,2], result[0][0].Candidates)
-        self.assertEqual([1,2,3], result[3][0].Candidates)
+        self.assertTrue( result[1][3].Changed)
+        self.assertEqual(1, len(result[1][3].NewCandidates))
+        self.assertIn(2, result[1][3].NewCandidates)
+        self.assertTrue( result[3][2].Changed)
+        self.assertEqual(1, len(result[3][2].NewCandidates))
+        self.assertIn(2, result[3][2].NewCandidates)
+        self.assertEqual([1,2], result[0][0].NewCandidates)
+        self.assertEqual([1,2,3], result[3][0].NewCandidates)
 
-    def testSetSinglesColumn(self):
+    def testFindSinglesColumn(self):
         # Arrange
         colours = Colours()
         dimension = 4
@@ -270,7 +271,7 @@ class TestSudoku(unittest.TestCase):
         #   !-.-!-.-!  !----------.---------!---------.---------!
 
         # Act
-        dut.SetSinglesColumn()
+        dut.FindSinglesColumn()
         dut.DoChange()
         result = dut.Sudoku
 
@@ -294,7 +295,7 @@ class TestSudoku(unittest.TestCase):
         self.assertTrue(    result[3][0].Solved)
         self.assertEqual(1, result[3][0].Number)
 
-    def testSetSinglesRow(self):
+    def testFindSinglesRow(self):
         # Arrange
         colours = Colours()
         dimension = 4
@@ -319,7 +320,7 @@ class TestSudoku(unittest.TestCase):
         #   !-.-!-.-!  !---------.---------!---------.---------!
 
         # Act
-        dut.SetSinglesRow()
+        dut.FindSinglesRow()
         dut.DoChange()
         result = dut.Sudoku
 
@@ -343,7 +344,7 @@ class TestSudoku(unittest.TestCase):
         self.assertTrue(    result[0][3].Solved)
         self.assertEqual(4, result[0][3].Number)
 
-    def testSetSinglesGroup(self):
+    def testFindSinglesGroup(self):
         # Arrange
         colours = Colours()
         dimension = 4
@@ -356,7 +357,7 @@ class TestSudoku(unittest.TestCase):
         sudoku[1][1].Remove(1)
         sudoku[1][1].Remove(2)
         dut.DoChange()
-        # 4x4 test sudoku before set singles in columns. It is not a real situation
+        # 4x4 test sudoku before set singles in columns. It's not a real situation
         #    Sudoku     Candidates  
         #    0 1 2 3    0
         #   !-.-!-.-!  !---------.---------!---------.---------!

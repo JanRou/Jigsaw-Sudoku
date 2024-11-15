@@ -3,6 +3,7 @@ The project is organizid in folders:
 * basesudoku holds the base classes to handle a sudoku and cells,
 * jigsaw extends basesudoku with jigsaw puzzle behaviour and rule based solving,
 * hyper is empty and is the start of another sudoku puzzle type,
-* root holds main that initializes a sudoku window and set a jigsaw puzzle for solving.
+* root holds main that initializes a sudoku window and set a jigsaw puzzle for solving,
+* Test holds the unit test classes performed by python unittest lib.
 
 The jigsaw solving rules are implemented in sudoku.py. 

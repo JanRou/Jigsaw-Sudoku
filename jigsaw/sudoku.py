@@ -1,7 +1,7 @@
 from basesudoku.basesudoku import BaseSudoku
 from jigsaw.cell import JigsawCell
 
-class JigsawSudoku(BaseSudoku): # TODO inherit from BaseSudoku
+class JigsawSudoku(BaseSudoku):
     def __init__(self, d, shape, colours): 
         # d is dimension of sudoku, usually 4, 9, 16, 25 ...
         # shape is d=nxn row and columns with group indexes 0 based, n=sqrt(d), 

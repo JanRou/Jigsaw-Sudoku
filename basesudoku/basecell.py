@@ -3,7 +3,7 @@ import math
 class BaseCell:
     def __init__(self, d, r, c):
         self._number = 0 # 0 means not solved, 1 - n means solved
-        self._dimension = d # 9=3x3, 16=4x4, 25=5x5 ...
+        self._dimension = d # 4=2x2, 9=3x3, 16=4x4, 25=5x5 ...
         self._row=r    # row and column are 0 based
         self._column=c
         self._candidates = []
@@ -75,7 +75,8 @@ class BaseCell:
                     self._newNumber = n
                     self._changed = True
                     break
-
+                else:
+                    raise ValueError
     @property
     def Row(self):
         return self._row

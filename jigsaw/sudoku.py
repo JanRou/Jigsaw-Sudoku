@@ -15,8 +15,8 @@ class JigsawSudoku(BaseSudoku):
         shapeCheck = self.CheckShape(shape) # returns tuple (bool, message)
         if not shapeCheck[0]:
             raise ValueError("Shape check failed: " + shapeCheck[1])
-        self.steps = { 0: "Try: set single candidates as solution", 1: "Try: find possible candidates"
-                      , 2: "Try: find single candidates", 3: "Update sudoku" }
+        self.steps = { 0: 'Try: set single candidates as solution', 1: 'Try: find possible candidates'
+                      , 2: 'Try: find single candidates', 3: 'Update sudoku' }
         self.state = 0
 
     # implements abstract method in base class

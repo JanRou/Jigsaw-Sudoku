@@ -20,7 +20,7 @@ class SudokuWindow(Tk):
         
         self.sudokuvar = StringVar()
         self.combo = ttk.Combobox( self.mainFrame, textvariable=self.sudokuvar)
-        self.combo['values'] = ('Normal', 'Jigsaw', 'Hyper' )
+        self.combo['values'] = ('Jigsaw', 'Normal', 'Hyper' )
         self.combo.grid(row=1, column=0, padx=5, pady=5)
         self.combo.state(["readonly"])
         self.combo.current(0)        
@@ -31,12 +31,23 @@ class SudokuWindow(Tk):
         # call sudoku solver selected
         choice = self.combo.get()
         if choice == "Jigsaw":
-            jigsaw.run()
+            sudoku = jigsaw.createSudoku()
+            jigsaw.run(sudoku)
         elif choice == "Hyper":
             pass
         else:
             pass
 
+def runInDebugger():
+    sudoku = jigsaw.createSudoku()
+    while not sudoku.Solved:
+        result = sudoku.TakeStep()
+        print(result)
+
 #main
-mainWindow = SudokuWindow()
-mainWindow.mainloop()
+# mainWindow = SudokuWindow()
+# mainWindow.mainloop()
+runInDebugger()
+
+    
+

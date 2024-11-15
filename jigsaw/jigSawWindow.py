@@ -1,5 +1,5 @@
 from tkinter import *
-from tkinter import ttk
+from tkinter.ttk import *
 from tkinter import font
 from jigsaw.sudoku import JigsawSudoku
 import math
@@ -9,10 +9,10 @@ class JigsawWindow(Tk):
         super().__init__()
         self.title("Jigsaw Sudoku Solver")
         self.minsize( 400,400)
-        self.maxsize( 800,600)
+        self.maxsize( 1000,1200)
         self.geometry("800x600+50+50")
-        # TODO skal mainFrame i sin egen klasse?
-        self.mainFrame = ttk.Frame( self, width=800, height=600)
+        
+        self.mainFrame = Frame( self, width=800, height=600)
         self.mainFrame.grid(column=0, row=0, sticky=(N, W, E, S))
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
@@ -24,31 +24,42 @@ class JigsawWindow(Tk):
     def step(self):
         result = self.sudoku.TakeStep()
         self.rightFrame.show()
-        return result
+        #self.leftFrame.showResult(result)  # TODO skidt konstruktion
+        print(result)
 
-class LeftFrame(ttk.Frame):
+    def run(self):
+        """Run the main loop."""
+        self.mainloop()
+
+class LeftFrame(Frame):
     def __init__(self, root, w, h, step):
         super().__init__( root, width=w, height=h )
-
         self.grid(row=0, column=0, padx=10, pady=5)
-        self.headLabel=ttk.Label( self
-                , text="Solve jigsaw sudoku").grid(row=0, column=0, padx=5, pady=5)
-        self.button = ttk.Button( self, text="Next step >"
-                , command=self.takeNextStep).grid(row=1, column=0, padx=5, pady=5)
-        self.results = []
+
+        self.headLabel=Label( self, text="Solve jigsaw sudoku")
+        self.headLabel.grid(row=0, column=0, padx=5, pady=5)
+
+        self.button = Button( self, text="Next step >", command=self.takeNextStep)
+        self.button.grid(row=1, column=0, padx=5, pady=5)
+        
+        # Listbox
+        self.results = ['Test']
         self.resultsVar = StringVar(value=self.results)
-        self.listbox = Listbox(self, height=20, width= 30
-                , listvariable=self.resultsVar).grid(row=2, column=0, padx=5, pady=5)
+        self.resultsVar.set(self.results)
+        self.listbox = Listbox( self, height=20, width= 40, listvariable=self.resultsVar)        
+        self.listbox.grid(row=2, column=0, padx=5, pady=5)
 
         # TODO bindings for MVC
         self.step = step
 
     def takeNextStep(self):
-        result = self.step()
+        self.step()
+
+    def showResult(self, result):
         self.results.append(result)
         self.resultsVar.set(self.results)
 
-class RightFrame(ttk.Frame):
+class RightFrame(Frame):
     def __init__(self, root, w, h, sudoku, colours):
         super().__init__( root, width=w, height=h)
         self.grid(row=0, column=1, padx=10, pady=5)
@@ -65,15 +76,6 @@ class RightFrame(ttk.Frame):
                 cellView.grid( row=row, column=col, padx=5, pady=5, ipadx=10, ipady=10) 
                 rowView.append(cellView)
             self.sudokuView.append(rowView)
-
-    def createCellView(self, n):
-        if n!= 0:
-            number=  " " + str(n) + " "
-        else:
-            number = " "
-        result = StringVar( value=number)
-        result.set( number )
-        return result
 
     def show(self):
         for row in self.sudokuView:

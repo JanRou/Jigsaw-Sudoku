@@ -2,7 +2,7 @@
 class BaseSudoku:
     def __init__(self, d, createCell):
         self._dimension = d
-        self._sudoku = []  # the sudoku arranged by rows an columns
+        self._sudoku = []  # the sudoku arranged by rows and columns
         for rw in range( 0, self._dimension):
             row = []            
             for col in range( 0, self._dimension):

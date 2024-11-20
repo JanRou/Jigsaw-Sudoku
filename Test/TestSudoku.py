@@ -3,7 +3,7 @@ import math
 
 from context import jigsaw
 from jigsaw.colours import Colours
-from jigsaw.sudoku import JigsawSudoku
+from jigsaw.jigsawSudoku import JigsawSudoku
 
 if __name__ == '__main__':
     unittest.main()

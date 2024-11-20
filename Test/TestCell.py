@@ -142,6 +142,86 @@ class TestJigsawCell(unittest.TestCase):
         self.assertEqual( 4, resultNewNumber)
         self.assertTrue( dut.Solved)
 
+    def testAppendSingleCandidatesNotChanged(self):
+        # Arrange
+        colors = Colours()
+        dimension = 4
+        group = 0
+        row = 0
+        column = 0
+        dut = JigsawCell( dimension, row, column, group, colors)
+        dut.Remove(1)
+        dut.DoChange()
+        singleCandidates = [2]
+
+        # Act
+        result = dut.AppendSingleCandidates(singleCandidates)
+
+        # Assert
+        self.assertEqual( 3, len(result))
+        self.assertNotIn( 1, result)
+        self.assertIn( 2, result)
+
+    def testAppendSingleCandidatesChanged(self):
+        # Arrange
+        colors = Colours()
+        dimension = 4
+        group = 0
+        row = 0
+        column = 0
+        dut = JigsawCell( dimension, row, column, group, colors)
+        singleCandidates = [2]
+        dut.Remove(1)
+
+        # Act
+        result = dut.AppendSingleCandidates(singleCandidates)
+
+        # Assert
+        self.assertEqual( 3, len(result))
+        self.assertNotIn( 1, result)
+        self.assertIn( 2, result)
+
+
+    def testCountAndSetFirstCellForSingleCandidateNotChanged(self):
+        # Arrange
+        colors = Colours()
+        dimension = 4
+        group = 0
+        row = 0
+        column = 0
+        dut = JigsawCell( dimension, row, column, group, colors)
+        dut.Remove(1)
+        dut.DoChange()
+        firstCell = None
+        count = 0
+
+        # Act
+        resultCount, resultFirstCell = dut.CountAndSetFirstCellForSingleCandidate(2,count,firstCell)
+
+        # Assert
+        self.assertEqual( 1, resultCount)
+        self.assertIs( dut, resultFirstCell)
+
+    def testCountAndSetFirstCellForSingleCandidateChanged(self):
+        # Arrange
+        colors = Colours()
+        dimension = 4
+        group = 0
+        row = 0
+        column = 0
+        dut = JigsawCell( dimension, row, column, group, colors)
+        dut.Remove(1)
+        firstCell = None
+        count = 0
+
+        # Act
+        resultCount, resultFirstCell = dut.CountAndSetFirstCellForSingleCandidate(2,count,firstCell)
+
+        # Assert
+        self.assertEqual( 1, resultCount)
+        self.assertIs( dut, resultFirstCell)
+
+
     # def test(self):
     #     # Arrange
 

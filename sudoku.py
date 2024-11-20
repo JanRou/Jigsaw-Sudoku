@@ -40,14 +40,16 @@ class SudokuWindow(Tk):
 
 def runInDebugger():
     sudoku = jigsaw.createSudoku()
+    sudoku.Print()
     while not sudoku.Solved:
         result = sudoku.TakeStep()
         print(result)
+        sudoku.Print()
 
 #main
-# mainWindow = SudokuWindow()
-# mainWindow.mainloop()
-runInDebugger()
+mainWindow = SudokuWindow()
+mainWindow.mainloop()
+# runInDebugger()
 
     
 

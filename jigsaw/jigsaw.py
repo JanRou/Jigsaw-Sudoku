@@ -1,7 +1,7 @@
 import math
 
 from jigsaw.colours import Colours
-from jigsaw.sudoku import JigsawSudoku
+from jigsaw.jigsawSudoku import JigsawSudoku
 from jigsaw.jigSawWindow import JigsawWindow
 
 def createSudoku():

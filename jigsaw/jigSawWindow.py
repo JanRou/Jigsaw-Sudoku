@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter.ttk import *
 from tkinter import font
-from jigsaw.sudoku import JigsawSudoku
+from jigsaw.jigsawSudoku import JigsawSudoku
 import math
 
 class JigsawWindow(Tk):
@@ -10,9 +10,9 @@ class JigsawWindow(Tk):
         self.title("Jigsaw Sudoku Solver")
         self.minsize( 400,400)
         self.maxsize( 1000,1200)
-        self.geometry("800x600+50+50")
+        self.geometry("1000x600+50+50")
         
-        self.mainFrame = Frame( self, width=800, height=600)
+        self.mainFrame = Frame( self, width=1000, height=600)
         self.mainFrame.grid(column=0, row=0, sticky=(N, W, E, S))
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
@@ -48,8 +48,6 @@ class LeftFrame(Frame):
         self.resultsVar.set(self.results)
         self.listbox = Listbox( self, height=20, width= 40, listvariable=self.resultsVar)        
         self.listbox.grid(row=2, column=0, padx=5, pady=5)
-
-        # TODO bindings for MVC
         self.step = step
 
     def takeNextStep(self):

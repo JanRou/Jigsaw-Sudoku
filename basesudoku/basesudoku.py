@@ -1,3 +1,4 @@
+import math
 
 class BaseSudoku:
     def __init__(self, d, createCell):
@@ -88,45 +89,47 @@ class BaseSudoku:
 
     def FindSinglesColumn(self):
         for column in range( 0, self._dimension):
-            singleCandidates = []
+            singleCandidates = [] # list of unique candidates in the column
             for row in range( 0, self._dimension):
-                if not self._sudoku[row][column].Solved:
-                    for candidate in self._sudoku[row][column].Candidates:
-                        if singleCandidates.count(candidate) == 0:
-                            singleCandidates.append(candidate)
+                singleCandidates = self._sudoku[row][column].AppendSingleCandidates(singleCandidates)
             for candidate in singleCandidates:
                 count = 0
                 firstCell = None
                 for row in range( 0, self._dimension):
-                    if (not self._sudoku[row][column].Solved) and candidate in self._sudoku[row][column].Candidates:
-                        count += 1
-                        if count==1:
-                            firstCell = self._sudoku[row][column] # set first just in case it's the only one
+                    count, firstCell = self._sudoku[row][column].CountAndSetFirstCellForSingleCandidate(candidate, count, firstCell)
                 if count == 1:
-                    # got one
+                    # The candidate only appears in one cell for the column.
                     firstCell.Number = candidate
 
     def FindSinglesRow(self):
         for row in range( 0, self._dimension):
             singleCandidates = []
             for column in range( 0, self._dimension):
-                if not self._sudoku[row][column].Solved:
-                    for candidate in self._sudoku[row][column].Candidates:
-                        if singleCandidates.count(candidate) == 0:
-                            singleCandidates.append(candidate)
+                singleCandidates = self._sudoku[row][column].AppendSingleCandidates(singleCandidates)
             for candidate in singleCandidates:
                 count = 0
                 firstCell = None
                 for column in range( 0, self._dimension):
-                    if (not self._sudoku[row][column].Solved) and candidate in self._sudoku[row][column].Candidates: 
-                        count += 1
-                        if count==1:
-                            firstCell = self._sudoku[row][column]  # set first just in case it's the only one
+                    count, firstCell = self._sudoku[row][column].CountAndSetFirstCellForSingleCandidate(candidate, count, firstCell)
                 if count == 1:
-                    # got one
+                    # The candidate only appears in one cell for the row.
                     firstCell.Number = candidate
 
     def FindSinglesBase(self, setSinglesHook):
         self.FindSinglesRow()
         self.FindSinglesColumn()
         setSinglesHook()
+
+    # For debug of sudoku solving
+    def Print(self):
+        rho = round(math.sqrt(self._dimension))
+        for r in range( 0, self._dimension):
+            strings = []
+            for i in range(rho):
+                strings.append("")
+            for c in range( 0, self._dimension):
+                cellStrings = self._sudoku[r][c].Print()
+                for i in range(rho):
+                    strings[i] = strings[i] + cellStrings[i]
+            for i in range(rho):
+                print( strings[i] )

@@ -15,8 +15,6 @@ class JigsawSudoku(BaseSudoku):
         shapeCheck = self.CheckShape(shape) # returns tuple (bool, message)
         if not shapeCheck[0]:
             raise ValueError("Shape check failed: " + shapeCheck[1])
-        self.steps = { 0: 'Try: set single candidates as solution', 1: 'Try: find possible candidates'
-                      , 2: 'Try: find single candidates', 3: 'Update sudoku' }
         self.state = 0
 
     # implements abstract method in base class
@@ -67,49 +65,59 @@ class JigsawSudoku(BaseSudoku):
         self.FindPossibleCandidatesBase(self.RemoveCandidatesHook)
 
     def SetSinglesGroup(self):
+        # for debug
+        # self.Print()
         for group in range( 0, self._dimension):
-            singleCandiates = []
+            singleCandidates = []
             for cell in self._groups[group]:
-                if not cell.Solved:
-                    for candidate in cell.Candidates:
-                        if singleCandiates.count(candidate) == 0:
-                            singleCandiates.append(candidate)
-            for candidate in singleCandiates:
+                singleCandidates = cell.AppendSingleCandidates(singleCandidates)
+            for candidate in singleCandidates:
                 count = 0
                 firstCell = None
                 for cell in self._groups[group]:
-                    if (not cell.Solved) and candidate in cell.Candidates:
-                        count += 1
-                        if count==1:
-                            firstCell = cell  # set first just in case it's the only one
+                    count, firstCell = cell.CountAndSetFirstCellForSingleCandidate(candidate, count, firstCell)
                 if count == 1:
-                    # got one
+                    # The candidate only appears in one cell for the group.
                     firstCell.Number = candidate
 
     def SetSingles(self):
         self.FindSinglesBase(self.SetSinglesGroup)
         
     def TakeStep(self):
-        result = self.steps[self.state]
-        if not self.Solved:            
+        self.steps = { 0: 'Find single candidate as solution', 1: 'Find possible candidates'
+                , 2: 'Find single candidate in row, column and group', 3: 'Update sudoku'
+                , 4: "Done, solved"}
+        if not self.Solved:
+            result = self.steps[self.state]
             match self.state:
                 case 0:
                     self.SetSingleCandidatesAsnewNumber()
                     if self.Changed:
+                        result = result + ", yes"
                         self.state = 3
                     else:
+                        result = result + ", no"
                         self.state = 1
                 case 1:
                     self.FindPossibleCandidates()
                     if self.Changed:
+                        result = result + ", yes"
                         self.state = 3
                     else:
+                        result = result + ", no"
                         self.state = 2
                 case 2:
                     self.SetSingles()
+                    if self.Changed:
+                        result = result + ", yes"
+                        self.state = 3
+                    else:
+                        result = result + ", no"
                     self.state = 3
                 case 3:
                     self.DoChange()
                     self.state = 0
+        else:
+            result = self.steps[4]
 
         return result

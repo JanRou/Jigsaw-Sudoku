@@ -32,24 +32,15 @@ class SudokuWindow(Tk):
         choice = self.combo.get()
         if choice == "Jigsaw":
             sudoku = jigsaw.createSudoku()
-            jigsaw.run(sudoku)
+            jigsaw.run(self, sudoku)
         elif choice == "Hyper":
             pass
         else:
             pass
 
-def runInDebugger():
-    sudoku = jigsaw.createSudoku()
-    sudoku.Print()
-    while not sudoku.Solved:
-        result = sudoku.TakeStep()
-        print(result)
-        sudoku.Print()
-
 #main
 mainWindow = SudokuWindow()
 mainWindow.mainloop()
-# runInDebugger()
 
     
 

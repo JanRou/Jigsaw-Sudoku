@@ -1,53 +1,55 @@
-from tkinter import *
-from tkinter.ttk import *
+import tkinter as tk
+from tkinter import ttk
 from tkinter import font
 from jigsaw.jigsawSudoku import JigsawSudoku
 import math
 
-class JigsawWindow(Tk):
-    def __init__(self, sudoku):
-        super().__init__()
+class JigsawWindow(tk.Toplevel):
+    def __init__(self, parent, sudoku):
+        super().__init__(parent)
         self.title("Jigsaw Sudoku Solver")
         self.minsize( 400,400)
         self.maxsize( 1000,1200)
         self.geometry("1000x600+50+50")
         
-        self.mainFrame = Frame( self, width=1000, height=600)
-        self.mainFrame.grid(column=0, row=0, sticky=(N, W, E, S))
+        self.mainFrame = ttk.Frame( self, width=1000, height=600)
+        self.mainFrame.grid(column=0, row=0, sticky=(tk.N, tk.W, tk.E, tk.S))
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
 
         self.sudoku = sudoku        
-        self.leftFrame = LeftFrame( self.mainFrame, 200, 600, self.step)
-        self.rightFrame = RightFrame( self.mainFrame, 600, 600, sudoku, CellColours() )
+        self.leftFrame = LeftFrame( self, 200, 600, self.step)
+        self.rightFrame = RightFrame( self, 600, 600, sudoku, CellColours() )
 
     def step(self):
         result = self.sudoku.TakeStep()
         self.rightFrame.show()
-        #self.leftFrame.showResult(result)  # TODO skidt konstruktion
+        self.leftFrame.showResult(result)
         print(result)
 
-    def run(self):
-        """Run the main loop."""
-        self.mainloop()
-
-class LeftFrame(Frame):
+class LeftFrame(ttk.Frame):
     def __init__(self, root, w, h, step):
         super().__init__( root, width=w, height=h )
-        self.grid(row=0, column=0, padx=10, pady=5)
+        self.grid(row=0, column=0, padx=10, pady=5, sticky=(tk.N, tk.W, tk.E, tk.S))
 
-        self.headLabel=Label( self, text="Solve jigsaw sudoku")
+        self.headLabel=ttk.Label( self, text="Solve jigsaw sudoku")
         self.headLabel.grid(row=0, column=0, padx=5, pady=5)
 
-        self.button = Button( self, text="Next step >", command=self.takeNextStep)
+        self.button = ttk.Button( self, text="Next step >", command=self.takeNextStep)
         self.button.grid(row=1, column=0, padx=5, pady=5)
         
         # Listbox
-        self.results = ['Test']
-        self.resultsVar = StringVar(value=self.results)
-        self.resultsVar.set(self.results)
-        self.listbox = Listbox( self, height=20, width= 40, listvariable=self.resultsVar)        
+        self.results = ["Test"]
+        self.resultsVar = tk.StringVar(value=self.results)    
+        self.listbox = tk.Listbox( self, listvariable=self.resultsVar, height=20, width= 50)         
         self.listbox.grid(row=2, column=0, padx=5, pady=5)
+
+        # Scrollbar to listbox
+        self.scrollbar = tk.Scrollbar(self, orient="vertical")
+        self.scrollbar.grid(row=2, column=1, sticky=(tk.NS)) 
+        self.listbox.config(yscrollcommand = self.scrollbar.set)
+        self.scrollbar.config(command = self.listbox.yview) 
+
         self.step = step
 
     def takeNextStep(self):
@@ -56,11 +58,12 @@ class LeftFrame(Frame):
     def showResult(self, result):
         self.results.append(result)
         self.resultsVar.set(self.results)
+        self.listbox.see("end")
 
-class RightFrame(Frame):
+class RightFrame(ttk.Frame):
     def __init__(self, root, w, h, sudoku, colours):
         super().__init__( root, width=w, height=h)
-        self.grid(row=0, column=1, padx=10, pady=5)
+        self.grid(row=0, column=1, padx=10, pady=5, sticky=(tk.N, tk.W, tk.E, tk.S))
         self.sudoku = sudoku
         self.colours = colours
         self.sudokuView = []        
@@ -96,7 +99,7 @@ class CellColours:
     def get(self, g):
         return self.colours[g]
 
-class SudokuCellView(Canvas):
+class SudokuCellView(tk.Canvas):
     def __init__(self, root, bgcolour, cell, **kwargs):
         super().__init__( root, width=30, height=30, background=bgcolour, **kwargs)
         self.cell = cell

@@ -41,6 +41,6 @@ def createSudoku():
     sudoku.DoChange() # set the changes
     return sudoku
 
-def run(sudoku):
-    window = JigsawWindow(sudoku)
-    window.run()
+def run(parent, sudoku):
+    window = JigsawWindow(parent, sudoku)
+    window.grab_set()

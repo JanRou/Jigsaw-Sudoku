@@ -3,7 +3,7 @@ import math
 
 from context import jigsaw
 from jigsaw.colours import Colours
-from jigsaw.cell import JigsawCell
+from jigsaw.jigsawCell import JigsawCell
 
 if __name__ == '__main__':
     unittest.main()

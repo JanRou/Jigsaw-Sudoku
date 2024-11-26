@@ -36,8 +36,10 @@ class TestBaseSudoku(unittest.TestCase):
         self.assertEqual(4, resultSudoku[1][0].Number)
 
     # for testing constructor
-    def createCell(self, d, rw, col):
-        cell = BaseCell( d, rw, col)
+    def createCell(self, dim, rw, cl):
+        rho = round(math.sqrt(dim))
+        group = (rw//rho)*rho + (cl//rho) # upper left square is indexed 0, next to the right 1, and so forth.
+        cell = BaseCell( dim, rw, cl, group)
         return cell
 
     def testDoChange(self):
@@ -131,7 +133,7 @@ class TestBaseSudoku(unittest.TestCase):
         # 2 ! . ! .1!  !(1,2,3,4)!(1,2,3,4)!(1,2,3,4).-        !
         # 3 ! .4! . !  !(1,2,3,4)!-        !(1,2,3,4).(1,2,3,4)!
         #   ---------  -----------------------------------------
-        sudoku= BaseSudoku( dimension, self.createCell)
+        sudoku= BaseSudoku( dimension, createCell)
         sudoku.Set( 0, 2, 3)
         sudoku.Set( 1, 0, 4)
         sudoku.Set( 2, 3, 1)

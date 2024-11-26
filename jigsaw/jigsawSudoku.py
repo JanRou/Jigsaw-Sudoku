@@ -1,34 +1,29 @@
 from basesudoku.basesudoku import BaseSudoku
-from jigsaw.cell import JigsawCell
+from jigsaw.jigsawCell import JigsawCell
 
 class JigsawSudoku(BaseSudoku):
     def __init__(self, d, shape, colours): 
         # d is dimension of sudoku, usually 4, 9, 16, 25 ...
         # shape is d=nxn row and columns with group indexes 0 based, n=sqrt(d), 
         # where 0 is first group at upper left corner and n is last
-        self._shape = shape
-        self._colours = colours
-        self._groups = []  # the soudoku arranged by groups
-        for rw in range( 0, d):
-            self._groups.append([])        
+        self.shape = shape # forms the jigsaw
+        self.colours = colours
         super().__init__(d, self.createCell)
         shapeCheck = self.CheckShape(shape) # returns tuple (bool, message)
         if not shapeCheck[0]:
             raise ValueError("Shape check failed: " + shapeCheck[1])
         self.state = 0
 
-    # implements abstract method in base class
-    def createCell(self, d, rw, col):
-        cell = JigsawCell( d, rw, col, self._shape[rw][col], self._colours)
-        self._groups[self._shape[rw][col]].append(cell)
+    def createCell(self, dim, rw, col):
+        cell = JigsawCell( dim, rw, col, self.shape[rw][col], self.colours)        
         return cell
 
     def CheckShape(self, shape): # returns tuple (bool, message)
         # each group index from 0 to dimension-1 must appear dimension times in shape
         groupIndexes = {} # dictionary to hold group indexes and counts as values
         msg = ""
-        for r in range( 0, self._dimension):
-            for c in range( 0, self._dimension):
+        for r in range( 0, self.dimension):
+            for c in range( 0, self.dimension):
                 if shape[r][c] in groupIndexes:
                     # found the group, so increment count of group
                     groupIndexes[shape[r][c]] += 1
@@ -36,14 +31,14 @@ class JigsawSudoku(BaseSudoku):
                     # not found group index, so add group and set count to 1
                     groupIndexes[shape[r][c]] = 1
         result = True
-        for group in range(self._dimension):
+        for group in range(self.dimension):
             result = result and group in groupIndexes
             if not result: # group index missing
                 msg = "Group index " + str(group) + " is not found in shape"
                 break
-            result = result and groupIndexes[group] == self._dimension
+            result = result and groupIndexes[group] == self.dimension
             if not result: # group index count not equal to dimension
-                msg = "Count of group " + str(group) + " indexes is not equal to dimension, " + str(self._dimension)
+                msg = "Count of group " + str(group) + " indexes is not equal to dimension, " + str(self.dimension)
                 break
         return (result, msg)
     
@@ -51,11 +46,11 @@ class JigsawSudoku(BaseSudoku):
         return self.state
 
     def GetGroup( self, r, c):
-        return self._sudoku[r][c].Group
+        return self.sudoku[r][c].Group
 
     def RemoveCandidatesInGroupForNumber( self, group, number):
         # remove candidates in group
-        for cell in self._groups[group]:
+        for cell in self.groups[group]:
             cell.Remove(number)
 
     def RemoveCandidatesHook( self, cell):
@@ -65,16 +60,14 @@ class JigsawSudoku(BaseSudoku):
         self.FindPossibleCandidatesBase(self.RemoveCandidatesHook)
 
     def SetSinglesGroup(self):
-        # for debug
-        # self.Print()
-        for group in range( 0, self._dimension):
+        for group in range( 0, self.dimension):
             singleCandidates = []
-            for cell in self._groups[group]:
+            for cell in self.groups[group]:
                 singleCandidates = cell.AppendSingleCandidates(singleCandidates)
             for candidate in singleCandidates:
                 count = 0
                 firstCell = None
-                for cell in self._groups[group]:
+                for cell in self.groups[group]:
                     count, firstCell = cell.CountAndSetFirstCellForSingleCandidate(candidate, count, firstCell)
                 if count == 1:
                     # The candidate only appears in one cell for the group.

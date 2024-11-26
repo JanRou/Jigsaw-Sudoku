@@ -39,9 +39,9 @@ class LeftFrame(ttk.Frame):
         self.button.grid(row=1, column=0, padx=5, pady=5)
         
         # Listbox
-        self.results = ["Test"]
+        self.results = []
         self.resultsVar = tk.StringVar(value=self.results)    
-        self.listbox = tk.Listbox( self, listvariable=self.resultsVar, height=20, width= 50)         
+        self.listbox = tk.Listbox( self, listvariable=self.resultsVar, height=30, width= 50)         
         self.listbox.grid(row=2, column=0, padx=5, pady=5)
 
         # Scrollbar to listbox
@@ -89,12 +89,12 @@ class CellColours:
         self.colours.append("#FF7F7F") # 0 light red
         self.colours.append("#7FFF7F") # 1 light green
         self.colours.append("#EF7FFF") # 2 light violet
-        self.colours.append("#FFFF7F") # 3 light orange
-        self.colours.append("#7FFFFF") # 4 light 
-        self.colours.append("#FF7F1F") # 5 light 
-        self.colours.append("#FFEFBF") # 6 light 
-        self.colours.append("#FFCF1F") # 7 light 
-        self.colours.append("#EFFFEF") # 8 light 
+        self.colours.append("#FFFF7F") # 3 light yellow
+        self.colours.append("#7FFFFF") # 4 light cyan
+        self.colours.append("#FF7F1F") # 5 orange
+        self.colours.append("#FFEFBF") # 6 light sand
+        self.colours.append("#FFCF1F") # 7 yellow
+        self.colours.append("#EFFFEF") # 8 very light green
     
     def get(self, g):
         return self.colours[g]

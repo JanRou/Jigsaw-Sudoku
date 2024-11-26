@@ -1,27 +1,31 @@
 import math
 
 class BaseSudoku:
-    def __init__(self, d, createCell):
-        self._dimension = d
-        self._sudoku = []  # the sudoku arranged by rows and columns
-        for rw in range( 0, self._dimension):
+    def __init__(self, dim, createCell):
+        self.dimension = dim # = rho*rho
+        self.sudoku = []  # the sudoku arranged by rows and columns
+        self.groups = []  # the soudoku arranged by groups
+        for g in range( 0, dim):
+            self.groups.append([])
+        for r in range( 0, self.dimension):
             row = []            
-            for col in range( 0, self._dimension):
-                cell = createCell(self._dimension, rw, col)
+            for c in range( 0, self.dimension):
+                cell = createCell(self.dimension, r, c)
+                self.groups[cell.Group].append(cell)
                 row.append( cell )
-            self._sudoku.append(row)
+            self.sudoku.append(row)
 
     @property
     def Dimension(self):
-        return self._dimension
+        return self.dimension
     
     @property
     def Solved(self):
         # TODO check that the sudoku is really solved not just all cells have a number set!
         result = True
-        for r in range(self._dimension):
-            for c in range(self._dimension):
-                result = result and self._sudoku[r][c].Solved
+        for r in range(self.dimension):
+            for c in range(self.dimension):
+                result = result and self.sudoku[r][c].Solved
                 if not result:
                     break
             if not result:
@@ -31,9 +35,9 @@ class BaseSudoku:
     @property
     def Changed(self):
         result = False
-        for r in range(self._dimension):
-            for c in range(self._dimension):
-                result = result or self._sudoku[r][c].Changed
+        for r in range(self.dimension):
+            for c in range(self.dimension):
+                result = result or self.sudoku[r][c].Changed
                 if result:
                     break
             if result:
@@ -41,45 +45,45 @@ class BaseSudoku:
         return result
 
     def DoChange(self):
-        for r in range(self._dimension):
-            for c in range(self._dimension):
-                self._sudoku[r][c].DoChange()
+        for r in range(self.dimension):
+            for c in range(self.dimension):
+                self.sudoku[r][c].DoChange()
 
     def SetSingleCandidatesAsnewNumber(self):
-        for row in range( 0, self._dimension):
-            for col in range( 0, self._dimension):
-                self._sudoku[row][col].SetSingleCandidateToNewNumber()
+        for row in range( 0, self.dimension):
+            for col in range( 0, self.dimension):
+                self.sudoku[row][col].SetSingleCandidateToNewNumber()
 
     def GetCell(self, r, c):
-        return self._sudoku[r][c]
+        return self.sudoku[r][c]
 
     @property
     def Sudoku(self):
-        return self._sudoku
+        return self.sudoku
 
     def Set( self, r, c, n):
-        self._sudoku[r][c].Number = n
+        self.sudoku[r][c].Number = n
 
     def Get( self, r, c):
-        return self._sudoku[r][c].Number
+        return self.sudoku[r][c].Number
 
     def RemoveCandidatesInColumnForNumber( self, column, number):
         # remove candidates in column
-        for row in range( 0, self._dimension):
-            self._sudoku[row][column].Remove(number)        
+        for row in range( 0, self.dimension):
+            self.sudoku[row][column].Remove(number)        
 
     def RemoveCandidatesInRowForNumber( self, row, number):
         # remove candidates in column
-        for column in range( 0, self._dimension):
-            self._sudoku[row][column].Remove(number)        
+        for column in range( 0, self.dimension):
+            self.sudoku[row][column].Remove(number)        
 
     def FindPossibleCandidatesBase(self, removeCandidatesHook):
         # find solved
         cellsSolved = []
-        for row in range( 0, self._dimension):
-            for column in range( 0, self._dimension):
-                if self._sudoku[row][column].Solved:
-                    cellsSolved.append(self._sudoku[row][column])
+        for row in range( 0, self.dimension):
+            for column in range( 0, self.dimension):
+                if self.sudoku[row][column].Solved:
+                    cellsSolved.append(self.sudoku[row][column])
 
         # remove candidates
         for cell in cellsSolved:
@@ -88,29 +92,29 @@ class BaseSudoku:
             removeCandidatesHook( cell ) # remove from square, cross, group or other formation
 
     def FindSinglesColumn(self):
-        for column in range( 0, self._dimension):
+        for column in range( 0, self.dimension):
             singleCandidates = [] # list of unique candidates in the column
-            for row in range( 0, self._dimension):
-                singleCandidates = self._sudoku[row][column].AppendSingleCandidates(singleCandidates)
+            for row in range( 0, self.dimension):
+                singleCandidates = self.sudoku[row][column].AppendSingleCandidates(singleCandidates)
             for candidate in singleCandidates:
                 count = 0
                 firstCell = None
-                for row in range( 0, self._dimension):
-                    count, firstCell = self._sudoku[row][column].CountAndSetFirstCellForSingleCandidate(candidate, count, firstCell)
+                for row in range( 0, self.dimension):
+                    count, firstCell = self.sudoku[row][column].CountAndSetFirstCellForSingleCandidate(candidate, count, firstCell)
                 if count == 1:
                     # The candidate only appears in one cell for the column.
                     firstCell.Number = candidate
 
     def FindSinglesRow(self):
-        for row in range( 0, self._dimension):
+        for row in range( 0, self.dimension):
             singleCandidates = []
-            for column in range( 0, self._dimension):
-                singleCandidates = self._sudoku[row][column].AppendSingleCandidates(singleCandidates)
+            for column in range( 0, self.dimension):
+                singleCandidates = self.sudoku[row][column].AppendSingleCandidates(singleCandidates)
             for candidate in singleCandidates:
                 count = 0
                 firstCell = None
-                for column in range( 0, self._dimension):
-                    count, firstCell = self._sudoku[row][column].CountAndSetFirstCellForSingleCandidate(candidate, count, firstCell)
+                for column in range( 0, self.dimension):
+                    count, firstCell = self.sudoku[row][column].CountAndSetFirstCellForSingleCandidate(candidate, count, firstCell)
                 if count == 1:
                     # The candidate only appears in one cell for the row.
                     firstCell.Number = candidate
@@ -119,17 +123,3 @@ class BaseSudoku:
         self.FindSinglesRow()
         self.FindSinglesColumn()
         setSinglesHook()
-
-    # For debug of sudoku solving
-    def Print(self):
-        rho = round(math.sqrt(self._dimension))
-        for r in range( 0, self._dimension):
-            strings = []
-            for i in range(rho):
-                strings.append("")
-            for c in range( 0, self._dimension):
-                cellStrings = self._sudoku[r][c].Print()
-                for i in range(rho):
-                    strings[i] = strings[i] + cellStrings[i]
-            for i in range(rho):
-                print( strings[i] )

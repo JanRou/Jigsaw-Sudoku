@@ -1,13 +1,12 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import font
-from jigsaw.jigsawSudoku import JigsawSudoku
 import math
 
-class JigsawWindow(tk.Toplevel):
-    def __init__(self, parent, sudoku):
+class Window(tk.Toplevel):
+    def __init__(self, parent, title, sudoku):
         super().__init__(parent)
-        self.title("Jigsaw Sudoku Solver")
+        self.title(title)
         self.minsize( 400,400)
         self.maxsize( 1000,1200)
         self.geometry("1000x600+50+50")
@@ -18,8 +17,8 @@ class JigsawWindow(tk.Toplevel):
         self.rowconfigure(0, weight=1)
 
         self.sudoku = sudoku        
-        self.leftFrame = LeftFrame( self, 200, 600, self.step)
-        self.rightFrame = RightFrame( self, 600, 600, sudoku, CellColours() )
+        self.leftFrame = ControlFrame( self, 200, 600, self.step)
+        self.rightFrame = SudokuFrame( self, 600, 600, sudoku, CellColours() )
 
     def step(self):
         result = self.sudoku.TakeStep()
@@ -27,7 +26,7 @@ class JigsawWindow(tk.Toplevel):
         self.leftFrame.showResult(result)
         print(result)
 
-class LeftFrame(ttk.Frame):
+class ControlFrame(ttk.Frame):
     def __init__(self, root, w, h, step):
         super().__init__( root, width=w, height=h )
         self.grid(row=0, column=0, padx=10, pady=5, sticky=(tk.N, tk.W, tk.E, tk.S))
@@ -60,14 +59,13 @@ class LeftFrame(ttk.Frame):
         self.resultsVar.set(self.results)
         self.listbox.see("end")
 
-class RightFrame(ttk.Frame):
+class SudokuFrame(ttk.Frame):
     def __init__(self, root, w, h, sudoku, colours):
         super().__init__( root, width=w, height=h)
         self.grid(row=0, column=1, padx=10, pady=5, sticky=(tk.N, tk.W, tk.E, tk.S))
         self.sudoku = sudoku
         self.colours = colours
         self.sudokuView = []        
-        # TODO bindings for MVC
         for row in range(self.sudoku.Dimension):
             rowView = []
             for col in range(self.sudoku.Dimension):                

@@ -2,7 +2,6 @@ import unittest
 import math
 
 from context import jigsaw
-from jigsaw.colours import Colours
 from jigsaw.jigsawSudoku import JigsawSudoku
 
 if __name__ == '__main__':
@@ -12,9 +11,8 @@ class TestJigsawSudoku(unittest.TestCase):
 
     def testConstructorOk(self):
         # Arrange
-        colours = Colours()
         dimension = 4
-        dut = self.create4x4TestSudoku( dimension, colours)
+        dut = self.create4x4TestSudoku( dimension)
 
         # Act
         resultDim = dut.Dimension
@@ -38,16 +36,9 @@ class TestJigsawSudoku(unittest.TestCase):
 
     def testCheckShapeOk(self):
         # Arrange
-        colors = Colours()
         dimension = 4
-        shape = []
-        rho = round(math.sqrt(dimension))
-        for r in range(dimension):
-            row = []
-            for c in range(dimension):
-                row.append( ( r // rho )* rho + (c // rho ) )  # operator // is integer division 
-            shape.append(row)
-        dut = JigsawSudoku( dimension, shape, colors)
+        shape = self.createShape(dimension)
+        dut = JigsawSudoku( dimension, shape)
 
         # Act
         checkShapeResult = dut.CheckShape(shape)
@@ -58,16 +49,9 @@ class TestJigsawSudoku(unittest.TestCase):
 
     def testCheckShapeFail(self):
         # Arrange
-        colours = Colours()
         dimension = 4
-        shape = []
-        rho = round(math.sqrt(dimension))
-        for r in range(dimension):
-            row = []
-            for c in range(dimension):
-                row.append( ( r // rho )* rho + (c // rho ) )  # operator // is integer division 
-            shape.append(row)        
-        dut = JigsawSudoku( dimension, shape, colours)
+        shape = self.createShape(dimension)
+        dut = JigsawSudoku( dimension, shape)
         # change shape to a failing shape
         shape[dimension-1][dimension-1] = 2 # overwrites 3 with 2
 
@@ -80,122 +64,20 @@ class TestJigsawSudoku(unittest.TestCase):
 
     def testConstructorFails(self):
         # Arrange
-        colours = Colours()
         dimension = 4
-        shape = []
-        rho = round(math.sqrt(dimension))
-        for r in range(dimension):
-            row = []
-            for c in range(dimension):
-                row.append( ( r // rho )* rho + (c // rho ) )  # operator // is integer division 
-            shape.append(row)        
-        dut = JigsawSudoku( 4, shape, colours)
+        shape = self.createShape(dimension)
+        dut = JigsawSudoku( 4, shape)
         # change shape to a failing shape
         shape[dimension-1][dimension-1] = 2 # overwrites 3 with 2
 
         # Act and Assert
         with self.assertRaises(ValueError):
-            dut = JigsawSudoku( dimension, shape, colours)
-
-    def testSolvedFalse(self):
-        # Arrange
-        colors = Colours()
-        dimension = 4
-        shape = []
-        rho = round(math.sqrt(dimension))
-        for r in range(dimension):
-            row = []
-            for c in range(dimension):
-                row.append( ( r // rho )* rho + (c // rho ) )  # operator // is integer division 
-            shape.append(row)
-        dut = JigsawSudoku( 4, shape, colors)
-
-        # Act
-        result = dut.Solved
-
-        # Assert
-        self.assertFalse(result)
-
-    def testSolvedTrue(self):
-        # Arrange
-        colours = Colours()
-        dimension = 4
-        shape = []
-        rho = round(math.sqrt(dimension))
-        for r in range(dimension):
-            row = []
-            for c in range(dimension):
-                row.append( ( r // rho )* rho + (c // rho ) )  # operator // is integer division 
-            shape.append(row)
-        dut = JigsawSudoku( 4, shape, colours)
-        for r in range(dimension):
-            for c in range(dimension):
-                dut.Set( r, c, c+1)
-        dut.DoChange()
-
-        # Act            
-        result = dut.Solved
-
-        # Assert
-        self.assertTrue(result)
-
-    def testRemoveCandidatesInColumnForNumber(self):
-        # Arrange
-        colours = Colours()
-        dimension = 4
-        dut = self.create4x4TestSudoku( dimension, colours)
-
-        # Act
-        dut.RemoveCandidatesInColumnForNumber( 0, 4)
-        dut.DoChange()
-        result = dut.Sudoku
-
-        # Assert
-        # 4x4 test sudoku after removal of candidates
-        #    Sudoku     Candidates  
-        #    0 1 2 3    0
-        #   !-.-!-.-!  !---------.---------!---------.---------!
-        # 0 ! . !3. !  !(1,2,3)  .(1,2,3,4)!-        .(1,2,3,4)!
-        # 1 !4. ! . !  !-        .(1,2,3,4)!(1,2,3,4).(1,2,3,4)!
-        #   !-.-!-.-!  !---------.---------!---------.---------! 
-        # 2 ! . ! .1!  !(1,2,3,) .(1,2,3,4)!(1,2,3,4).-        !
-        # 3 ! .4! . !  !(1,2,3,) .-        !(1,2,3,4).(1,2,3,4)!
-        #   !-.-!-.-!  !---------.---------!---------.---------!
-        self.assertEqual([1,2,3], result[0][0].Candidates)
-        self.assertEqual([1,2,3], result[2][0].Candidates)
-        self.assertEqual([1,2,3], result[3][0].Candidates)
-
-    def testRemoveCandidatesInRowForNumber(self):
-        # Arrange
-        colours = Colours()
-        dimension = 4
-        dut = self.create4x4TestSudoku( dimension, colours)
-
-        # Act
-        dut.RemoveCandidatesInRowForNumber( 0, 3)
-        dut.DoChange()
-        result = dut.Sudoku
-
-        # Assert
-        # 4x4 test sudoku after removal of candidates
-        #    Sudoku     Candidates  
-        #    0 1 2 3    0
-        #   !-.-!-.-!  !----------.---------!---------.---------!
-        # 0 ! . !3. !  !(1,2,4)   .(1,2,4)  !-        .(1,2,4)  !
-        # 1 !4. ! . !  !-         .(1,2,3,4)!(1,2,3,4).(1,2,3,4)!
-        #   !-.-!-.-!  !----------.---------!---------.---------! 
-        # 2 ! . ! .1!  !(1,2,3,4) .(1,2,3,4)!(1,2,3,4).-        !
-        # 3 ! .4! . !  !(1,2,3,4) .-        !(1,2,3,4).(1,2,3,4)!
-        #   !-.-!-.-!  !----------.---------!---------.---------!
-        self.assertEqual([1,2,4], result[0][0].Candidates)
-        self.assertEqual([1,2,4], result[0][0].Candidates)
-        self.assertEqual([1,2,4], result[0][3].Candidates)
+            dut = JigsawSudoku( dimension, shape)
 
     def testRemoveCandidatesInGroupForNumber(self):
         # Arrange
-        colours = Colours()
         dimension = 4
-        dut = self.create4x4TestSudoku( dimension, colours)
+        dut = self.create4x4TestSudoku( dimension)
 
         # Act
         dut.RemoveCandidatesInGroupForNumber( 0, 4)
@@ -219,9 +101,8 @@ class TestJigsawSudoku(unittest.TestCase):
 
     def testFindPossibleCandidates(self):
         # Arrange
-        colours = Colours()
         dimension = 4
-        dut = self.create4x4TestSudoku( dimension, colours)
+        dut = self.create4x4TestSudoku( dimension)
 
         # Act
         dut.FindPossibleCandidates()
@@ -249,9 +130,8 @@ class TestJigsawSudoku(unittest.TestCase):
 
     def testFindSinglesColumn(self):
         # Arrange
-        colours = Colours()
         dimension = 4
-        dut = self.create4x4TestSudoku( dimension, colours)
+        dut = self.create4x4TestSudoku( dimension)
         sudoku = dut.Sudoku
         sudoku[0][0].Remove(3)
         sudoku[0][0].Remove(4)
@@ -297,9 +177,8 @@ class TestJigsawSudoku(unittest.TestCase):
 
     def testFindSinglesRow(self):
         # Arrange
-        colours = Colours()
         dimension = 4
-        dut = self.create4x4TestSudoku( dimension, colours)
+        dut = self.create4x4TestSudoku( dimension)
         sudoku = dut.Sudoku
         sudoku[0][0].Remove(3)
         sudoku[0][0].Remove(1)
@@ -346,9 +225,8 @@ class TestJigsawSudoku(unittest.TestCase):
 
     def testFindSinglesGroup(self):
         # Arrange
-        colours = Colours()
         dimension = 4
-        dut = self.create4x4TestSudoku( dimension, colours)
+        dut = self.create4x4TestSudoku( dimension)
         sudoku = dut.Sudoku
         sudoku[0][0].Remove(3)
         sudoku[0][0].Remove(1)
@@ -397,7 +275,7 @@ class TestJigsawSudoku(unittest.TestCase):
         self.assertTrue(    result[1][1].Solved)
         self.assertEqual(3, result[1][1].Number)
 
-    def create4x4TestSudoku(self, dimension, colours):
+    def create4x4TestSudoku(self, dimension):
         # 4x4 sudoku for test
         #    Sudoku     Candidates  
         #    0 1 2 3    0
@@ -408,6 +286,16 @@ class TestJigsawSudoku(unittest.TestCase):
         # 2 ! . ! .1!  !(1,2,3,4)!(1,2,3,4)!(1,2,3,4).-        !
         # 3 ! .4! . !  !(1,2,3,4)!-        !(1,2,3,4).(1,2,3,4)!
         #   ---------  -----------------------------------------
+        shape = self.createShape(dimension)
+        sudoku= JigsawSudoku( dimension, shape)
+        sudoku.Set( 0, 2, 3)
+        sudoku.Set( 1, 0, 4)
+        sudoku.Set( 2, 3, 1)
+        sudoku.Set( 3, 1, 4)
+        sudoku.DoChange()
+        return sudoku
+
+    def createShape(self, dimension):
         shape = []
         rho = round(math.sqrt(dimension))
         for r in range(dimension):
@@ -415,14 +303,7 @@ class TestJigsawSudoku(unittest.TestCase):
             for c in range(dimension):
                 row.append( ( r // rho )* rho + (c // rho ) )  # operator // is integer division 
             shape.append(row)
-
-        sudoku= JigsawSudoku( dimension, shape, colours)
-        sudoku.Set( 0, 2, 3)
-        sudoku.Set( 1, 0, 4)
-        sudoku.Set( 2, 3, 1)
-        sudoku.Set( 3, 1, 4)
-        sudoku.DoChange()
-        return sudoku
+        return shape
 
     # def test(self):
     #     # Arrange

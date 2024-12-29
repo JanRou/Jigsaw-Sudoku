@@ -1,8 +1,4 @@
-import math
-
-from jigsaw.colours import Colours
 from jigsaw.jigsawSudoku import JigsawSudoku
-from jigsaw.jigSawWindow import JigsawWindow
 
 def createSudoku():
     shape = []
@@ -15,8 +11,7 @@ def createSudoku():
     shape.append( [6,3,6,7,5,7,8,4,8] )
     shape.append( [6,3,6,7,7,7,8,4,8] )
     shape.append( [6,6,6,7,7,7,8,8,8] )
-    colours = Colours()
-    sudoku = JigsawSudoku( 9, shape, colours)
+    sudoku = JigsawSudoku( 9, shape)
     sudoku.Set( 0, 0, 1)
     sudoku.Set( 0, 3, 4)
     sudoku.Set( 0, 8, 9)
@@ -40,7 +35,3 @@ def createSudoku():
     sudoku.Set( 8, 8, 5)
     sudoku.DoChange() # set the changes
     return sudoku
-
-def run(parent, sudoku):
-    window = JigsawWindow(parent, sudoku)
-    window.grab_set()

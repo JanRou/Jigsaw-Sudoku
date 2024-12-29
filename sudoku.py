@@ -3,6 +3,8 @@ from tkinter import ttk
 from tkinter import font
 
 from jigsaw import jigsaw
+from normal import normal
+from window import Window
 
 class SudokuWindow(Tk):
     def __init__(self):
@@ -20,7 +22,8 @@ class SudokuWindow(Tk):
         
         self.sudokuvar = StringVar()
         self.combo = ttk.Combobox( self.mainFrame, textvariable=self.sudokuvar)
-        self.combo['values'] = ('Jigsaw', 'Normal', 'Hyper' )
+        # TODO self.combo['values'] = ('Normal', 'Jigsaw', 'Hyper', 'Samurai', 'X' )
+        self.combo['values'] = ('Normal', 'Jigsaw')
         self.combo.grid(row=1, column=0, padx=5, pady=5)
         self.combo.state(["readonly"])
         self.combo.current(0)        
@@ -32,11 +35,19 @@ class SudokuWindow(Tk):
         choice = self.combo.get()
         if choice == "Jigsaw":
             sudoku = jigsaw.createSudoku()
-            jigsaw.run(self, sudoku)
+        elif choice == "Normal":
+            sudoku = normal.createSudoku()
         elif choice == "Hyper":
+            pass
+        elif choice == "Samurai":
+            pass
+        elif choice == "X":
             pass
         else:
             pass
+        window = Window( self, choice, sudoku)
+        window.grab_set()
+
 
 #main
 mainWindow = SudokuWindow()

@@ -64,6 +64,83 @@ class TestBaseSudoku(unittest.TestCase):
         self.assertFalse(result02AfterChange)
         self.assertFalse(result10AfterChange)
 
+
+    def testSolvedTrue(self):
+        # Arrange
+        dimension = 4
+        dut = self.create4x4TestSudoku(dimension, self.createCell, False)
+        for r in range(dimension):
+            for c in range(dimension):
+                dut.Set( r, c, c+1)
+        dut.DoChange()
+
+        # Act            
+        result = dut.Solved
+
+        # Assert
+        self.assertTrue(result)
+
+    def testSolvedFalse(self):
+        # Arrange
+        dimension = 4
+        dut = self.create4x4TestSudoku(dimension, self.createCell, False)
+ 
+        # Act
+        result = dut.Solved
+
+        # Assert
+        self.assertFalse(result)
+
+    def testRemoveCandidatesInColumnForNumber(self):
+        # Arrange
+        dimension = 4
+        dut = self.create4x4TestSudoku(dimension, self.createCell, False)
+
+        # Act
+        dut.RemoveCandidatesInColumnForNumber( 0, 4)
+        dut.DoChange()
+        result = dut.Sudoku
+
+        # Assert
+        # 4x4 test sudoku after removal of candidates
+        #    Sudoku     Candidates  
+        #    0 1 2 3    0
+        #   !-.-!-.-!  !---------.---------!---------.---------!
+        # 0 ! . !3. !  !(1,2,3)  .(1,2,3,4)!-        .(1,2,3,4)!
+        # 1 !4. ! . !  !-        .(1,2,3,4)!(1,2,3,4).(1,2,3,4)!
+        #   !-.-!-.-!  !---------.---------!---------.---------! 
+        # 2 ! . ! .1!  !(1,2,3,) .(1,2,3,4)!(1,2,3,4).-        !
+        # 3 ! .4! . !  !(1,2,3,) .-        !(1,2,3,4).(1,2,3,4)!
+        #   !-.-!-.-!  !---------.---------!---------.---------!
+        self.assertEqual([1,2,3], result[0][0].Candidates)
+        self.assertEqual([1,2,3], result[2][0].Candidates)
+        self.assertEqual([1,2,3], result[3][0].Candidates)
+
+    def testRemoveCandidatesInRowForNumber(self):
+        # Arrange
+        dimension = 4
+        dut = self.create4x4TestSudoku(dimension, self.createCell, False)
+
+        # Act
+        dut.RemoveCandidatesInRowForNumber( 0, 3)
+        dut.DoChange()
+        result = dut.Sudoku
+
+        # Assert
+        # 4x4 test sudoku after removal of candidates
+        #    Sudoku     Candidates  
+        #    0 1 2 3    0
+        #   !-.-!-.-!  !----------.---------!---------.---------!
+        # 0 ! . !3. !  !(1,2,4)   .(1,2,4)  !-        .(1,2,4)  !
+        # 1 !4. ! . !  !-         .(1,2,3,4)!(1,2,3,4).(1,2,3,4)!
+        #   !-.-!-.-!  !----------.---------!---------.---------! 
+        # 2 ! . ! .1!  !(1,2,3,4) .(1,2,3,4)!(1,2,3,4).-        !
+        # 3 ! .4! . !  !(1,2,3,4) .-        !(1,2,3,4).(1,2,3,4)!
+        #   !-.-!-.-!  !----------.---------!---------.---------!
+        self.assertEqual([1,2,4], result[0][0].Candidates)
+        self.assertEqual([1,2,4], result[0][0].Candidates)
+        self.assertEqual([1,2,4], result[0][3].Candidates)
+
     def testSetSingleCandidatesAsnewNumber(self):
         # Arrange
         dimension = 4

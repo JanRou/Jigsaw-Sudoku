@@ -1,18 +1,16 @@
 import unittest
 import math
 
-from context import jigsaw
-from jigsaw.colours import Colours
-from jigsaw.jigsawCell import JigsawCell
+from basesudoku.basesudoku import BaseSudoku
+from basesudoku.basecell import BaseCell
 
 if __name__ == '__main__':
     unittest.main()
     
-class TestJigsawCell(unittest.TestCase):
+class TestBaseCell(unittest.TestCase):
 
     def testConstructor(self):
         # Arrange
-        colors = Colours()
         dimension = 4
         group = 0
         row = 0
@@ -20,7 +18,7 @@ class TestJigsawCell(unittest.TestCase):
         expectedcandidates = []
         for c in range(1,dimension+1):
             expectedcandidates.append(c)
-        dut = JigsawCell( dimension, row, column, group, colors)
+        dut = BaseCell( dimension, row, column, group)
 
         # Act
         solvedResult = dut.Solved
@@ -38,7 +36,6 @@ class TestJigsawCell(unittest.TestCase):
 
     def testRemoveOk(self):
         # Arrange
-        colors = Colours()
         dimension = 4
         group = 0
         row = 0
@@ -47,7 +44,7 @@ class TestJigsawCell(unittest.TestCase):
         # removes 1, so start from 2
         for c in range( 2, dimension+1):
             expectedcandidates.append(c)
-        dut = JigsawCell( dimension, row, column, group, colors)
+        dut = BaseCell( dimension, row, column, group)
 
         # Act
         dut.Remove(1)
@@ -57,14 +54,13 @@ class TestJigsawCell(unittest.TestCase):
 
     def testRemoveFail(self):
         # Arrange
-        colors = Colours()
         dimension = 4
         group = 0
         row = 0
         column = 0
         numberLow = 0
         numberHigh = 5
-        dut = JigsawCell( dimension, row, column, group, colors)
+        dut = BaseCell( dimension, row, column, group)
 
         # Assert
         with self.assertRaises(ValueError):
@@ -75,13 +71,12 @@ class TestJigsawCell(unittest.TestCase):
 
     def testSetAndGetNumberOk(self):
         # Arrange
-        colors = Colours()
         dimension = 4
         group = 0
         row = 0
         column = 0
         number = 2
-        dut = JigsawCell( dimension, row, column, group, colors)
+        dut = BaseCell( dimension, row, column, group)
 
         # Act
         getResult1 = dut.Number
@@ -98,14 +93,13 @@ class TestJigsawCell(unittest.TestCase):
 
     def testSetAndGetNumberFail(self):
         # Arrange
-        colors = Colours()
         dimension = 4
         group = 0
         row = 0
         column = 0
         numberLow = 0
         numberHigh = 5
-        dut = JigsawCell( dimension, row, column, group, colors)
+        dut = BaseCell( dimension, row, column, group)
 
         # Assert
         with self.assertRaises(ValueError):
@@ -116,12 +110,11 @@ class TestJigsawCell(unittest.TestCase):
 
     def testSetSingleCandidateToNewNumberOk(self):
         # Arrange
-        colors = Colours()
         dimension = 4
         group = 0
         row = 0
         column = 0
-        dut = JigsawCell( dimension, row, column, group, colors)
+        dut = BaseCell( dimension, row, column, group)
 
         # Act
         dut.Remove(1)
@@ -144,12 +137,11 @@ class TestJigsawCell(unittest.TestCase):
 
     def testAppendSingleCandidatesNotChanged(self):
         # Arrange
-        colors = Colours()
         dimension = 4
         group = 0
         row = 0
         column = 0
-        dut = JigsawCell( dimension, row, column, group, colors)
+        dut = BaseCell( dimension, row, column, group)
         dut.Remove(1)
         dut.DoChange()
         singleCandidates = [2]
@@ -164,12 +156,11 @@ class TestJigsawCell(unittest.TestCase):
 
     def testAppendSingleCandidatesChanged(self):
         # Arrange
-        colors = Colours()
         dimension = 4
         group = 0
         row = 0
         column = 0
-        dut = JigsawCell( dimension, row, column, group, colors)
+        dut = BaseCell( dimension, row, column, group)
         singleCandidates = [2]
         dut.Remove(1)
 
@@ -184,12 +175,11 @@ class TestJigsawCell(unittest.TestCase):
 
     def testCountAndSetFirstCellForSingleCandidateNotChanged(self):
         # Arrange
-        colors = Colours()
         dimension = 4
         group = 0
         row = 0
         column = 0
-        dut = JigsawCell( dimension, row, column, group, colors)
+        dut = BaseCell( dimension, row, column, group)
         dut.Remove(1)
         dut.DoChange()
         firstCell = None
@@ -204,12 +194,11 @@ class TestJigsawCell(unittest.TestCase):
 
     def testCountAndSetFirstCellForSingleCandidateChanged(self):
         # Arrange
-        colors = Colours()
         dimension = 4
         group = 0
         row = 0
         column = 0
-        dut = JigsawCell( dimension, row, column, group, colors)
+        dut = BaseCell( dimension, row, column, group)
         dut.Remove(1)
         firstCell = None
         count = 0

@@ -1,11 +1,11 @@
 import math
 
 class BaseSudoku:
-    def __init__(self, dim, createCell):
-        self.dimension = dim # = rho*rho
+    def __init__(self, dimension, createCell):
+        self.dimension = dimension # = rho*rho
         self.sudoku = []  # the sudoku arranged by rows and columns
         self.groups = []  # the soudoku arranged by groups
-        for g in range( 0, dim):
+        for g in range( 0, dimension):
             self.groups.append([])
         for r in range( 0, self.dimension):
             row = []            

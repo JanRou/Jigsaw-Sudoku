@@ -2,12 +2,12 @@ from basesudoku.basesudoku import BaseSudoku
 from basesudoku.basecell import BaseCell
 
 class JigsawSudoku(BaseSudoku):
-    def __init__(self, d, shape): 
+    def __init__(self, dimension, shape): 
         # d is dimension of sudoku, usually 4, 9, 16, 25 ...
         # shape is d=nxn row and columns with group indexes 0 based, n=sqrt(d), 
         # where 0 is first group at upper left corner and n is last
         self.shape = shape # forms the jigsaw
-        super().__init__(d, self.createCell)
+        super().__init__(dimension, self.createCell)
         shapeCheck = self.CheckShape(shape) # returns tuple (bool, message)
         if not shapeCheck[0]:
             raise ValueError("Shape check failed: " + shapeCheck[1])

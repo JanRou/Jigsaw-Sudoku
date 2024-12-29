@@ -57,15 +57,22 @@ class BaseSudoku:
     def GetCell(self, r, c):
         return self.sudoku[r][c]
 
+    def SetCell(self, r, c, cell):
+        self.sudoku[r][c] = cell
+
     @property
     def Sudoku(self):
         return self.sudoku
 
-    def Set( self, r, c, n):
-        self.sudoku[r][c].Number = n
+    @property
+    def Groups(self):
+        return self.groups
 
-    def Get( self, r, c):
-        return self.sudoku[r][c].Number
+    def Set( self, row, col, number):
+        self.sudoku[row][col].Number = number
+
+    def Get( self, row, col):
+        return self.sudoku[row][col].Number
 
     def RemoveCandidatesInColumnForNumber( self, column, number):
         # remove candidates in column

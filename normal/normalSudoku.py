@@ -49,6 +49,7 @@ class NormalSudoku(BaseSudoku):
         self.FindSinglesBase(self.SetSinglesGroup)
 
     def TakeStep(self):
+        # TODO add more rules and more states
         self.steps = { 0: 'Find single candidate as solution', 1: 'Find possible candidates'
                 , 2: 'Find single candidate in row, column and group', 3: 'Update sudoku'
                 , 4: "Done, solved"}

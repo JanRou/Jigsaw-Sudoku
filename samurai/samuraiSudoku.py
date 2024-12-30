@@ -1,5 +1,5 @@
 from basesudoku.basesudoku import BaseSudoku
-from basesudoku.basecell import BaseCell
+from samurai.samuraiCell import SamuraiCell
 import math
 import functools
 
@@ -12,35 +12,45 @@ class SamuraiSudoku():
         grids = [5]
         if not grid in grids:
             raise ValueError("Samurai grid not supported. Grid of 5 is supported: " + grid)
-        self.rho = round(math.sqrt(self.dimension))
         self.sudokus = []
-        self.state = 0
+        self.dimension = dimension
+        self.grid = grid
+        self.state = 0        
+        self.rho = round(math.sqrt(self.dimension)) 
         # Create grid sudokus
         for s in range(grid):
             sudoku = BaseSudoku(dimension, self.createCell)
             self.sudokus.append(sudoku)
-        # Set upper left corner cells of sudoku 2 in the middle to be shared with sudoku 0 lower right corner
-        self.setSharedCells(self.sudokus[2], 0, 0, self.sudokus[1], 6, 6 )
+        # TODO Set shared cells for all grids
+        # Set upper left corner cells of sudoku 2 in the middle to be shared with sudoku 0 lower right corner        
+        self.setSharedCells(self.sudokus[2].Sudoku, 0, 0, self.sudokus[0].Sudoku, self.rho, self.rho)
         # Set upper right corner cells of sudoku 2 in the middle to be shared with sudoku 1 lower left corner
-        self.setSharedCells(self.sudokus[2], 0, 6, self.sudokus[1], 6, 0 )
+        self.setSharedCells(self.sudokus[2].Sudoku, 0, self.rho, self.sudokus[1].Sudoku, self.rho, 0 )
         # Set lower left corner cells of sudoku 2 in the middle to be shared with sudoku 3 upper right corner
-        self.setSharedCells(self.sudokus[2], 6, 0, self.sudokus[1], 0, 6 )
+        self.setSharedCells(self.sudokus[2].Sudoku, self.rho, 0, self.sudokus[3].Sudoku, 0, self.rho )
         # Set lower right corner cells of sudoku 2 in the middle to be shared with sudoku 4 upper left corner
-        self.setSharedCells(self.sudokus[2], 6, 6, self.sudokus[1], 0, 0 )
+        self.setSharedCells(self.sudokus[2].Sudoku, self.rho, self.rho, self.sudokus[4].Sudoku, 0, 0 )
 
-    def setSharedCells(self, sudokuInMiddle, baseRowMiddle, baseColMiddle, sudoku, baseRow, baseCol):
+    def setSharedCells(self, sudokuInMiddle, baseRowMiddle, baseColMiddle, sudokuLeaf, baseRow, baseCol):
         for r in range(self.rho):
             for c in range(self.rho):
-                sudoku.SetCell( r+baseRow, c+baseCol, sudokuInMiddle.GetCell(r+baseRowMiddle, c+baseColMiddle))
+                cellMiddle =  sudokuInMiddle[r+baseRowMiddle][c+baseColMiddle]
+                cell = sudokuLeaf[r+baseRow][c+baseCol]
+                cellMiddle.SetShared(cell)
+                cell.SetShared(cellMiddle)
 
     def createCell(self, dim, rw, cl):        
         group = (rw//self.rho)*self.rho + (cl//self.rho) # upper left square is indexed 0, next to the right 1, and so forth.
-        cell = BaseCell( dim, rw, cl, group)
+        cell = SamuraiCell( dim, rw, cl, group)      
         return cell
 
     @property
     def Dimension(self):
         return self.dimension
+
+    @property
+    def Grid(self):
+        return self.grid
 
     @property
     def Solved(self):
@@ -72,8 +82,8 @@ class SamuraiSudoku():
     def Sudoku(self):
         return self.sudokus
     
-    def Set( self, sudoku, row, col, number):
-        self.sudokus[sudoku][row][col].Number = number
+    def Set( self, sudokuIndex, row, col, number):
+        self.sudokus[sudokuIndex].Sudoku[row][col].Number = number
 
     def RemoveCandidatesHook( self, cellWithCandidate, sudoku):
         for cell in sudoku.Groups[cellWithCandidate.group]:

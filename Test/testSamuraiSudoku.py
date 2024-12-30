@@ -2,7 +2,7 @@ import unittest
 import math
 
 from context import normal
-from normal.normalSudoku import NormalSudoku
+from samurai.samuraiSudoku import SamuraiSudoku
 
 if __name__ == '__main__':
     unittest.main()
@@ -10,45 +10,118 @@ if __name__ == '__main__':
 class TestSamuraiSudoku(unittest.TestCase):
 
     def testConstructorOk(self):
-                # Arrange
+        # Arrange
         dimension = 4
-        dut = self.create4x4TestSudoku( dimension)
+        grid = 5
+        dut = self.create2x2plus1TestSamuraiSudoku( dimension, grid)
 
         # Act
-        resultDim = dut.Dimension
-        resultSudoku = dut.Sudoku
+        resultDimension = dut.Dimension
+        resultGrid = dut.Grid
+        resultSudokus = dut.Sudoku
 
         # Assert
-        # 4x4 sudoku constructed
-        #    Sudoku     Candidates  
-        #    0 1 2 3    0
+        #    0 1 2 3 0 1 2 3
+        #   -----------------
+        # 0 !2.1!3.4|3.4!2.1!
+        # 1 !4.3!1.2|1.2!4.3!
+        # 2 !3.2! . ! . !1.4!
+        # 3 !1.4! . ! . !3.2!
+        #   !===!---!---!===!
+        # 0 !2.1! . ! . !4.3!
+        # 1 !4.3! . ! . !2.1!
+        # 2 !3.4!2.1|2.1!3.4!
+        # 3 !2.1!4.3|4.3!1.2!
         #   ---------  -----------------------------------------
-        # 0 ! . !3. !  !(1,2,3,4).(1,2,3,4)!-        .(1,2,3,4)!
-        # 1 !4. ! . !  !-        .(1,2,3,4)!(1,2,3,4).(1,2,3,4)!
-        #   !-.-!-.-!  !---------.---------!---------.---------! 
-        # 2 ! . ! .1!  !(1,2,3,4)!(1,2,3,4)!(1,2,3,4).-        !
-        # 3 ! .4! . !  !(1,2,3,4)!-        !(1,2,3,4).(1,2,3,4)!
-        #   ---------  -----------------------------------------
-        self.assertEqual(dimension, resultDim)
-        self.assertFalse(resultSudoku[0][0].Solved)
-        self.assertTrue(resultSudoku[1][0].Solved)
-        self.assertEqual(4, resultSudoku[1][0].Number)
+        self.assertEqual(dimension, resultDimension)
+        self.assertEqual(grid, resultGrid)
+        self.assertTrue(resultSudokus[0].Sudoku[0][0].Solved)
+        self.assertFalse(resultSudokus[0].Sudoku[2][3].Solved)
+        self.assertEqual(2, resultSudokus[0].Sudoku[0][0].Number)
+        self.assertEqual(1, resultSudokus[0].Sudoku[0][1].Number)
 
-    def create4x4TestSudoku(self, dimension):
-        # 4x4 sudoku for test
-        #    Sudoku     Candidates  
-        #    0 1 2 3    0
-        #   ---------  -----------------------------------------
-        # 0 ! . !3. !  !(1,2,3,4).(1,2,3,4)!-        .(1,2,3,4)!
-        # 1 !4. ! . !  !-        .(1,2,3,4)!(1,2,3,4).(1,2,3,4)!
-        #   !-.-!-.-!  !---------.---------!---------.---------! 
-        # 2 ! . ! .1!  !(1,2,3,4)!(1,2,3,4)!(1,2,3,4).-        !
-        # 3 ! .4! . !  !(1,2,3,4)!-        !(1,2,3,4).(1,2,3,4)!
-        #   ---------  -----------------------------------------
-        sudoku= NormalSudoku( dimension)
-        sudoku.Set( 0, 2, 3)
-        sudoku.Set( 1, 0, 4)
-        sudoku.Set( 2, 3, 1)
-        sudoku.Set( 3, 1, 4)
+    def testSharedCellsAreOk(self):
+        # Arrange
+        dimension = 4
+        grid = 5
+        dut = self.create2x2plus1TestSamuraiSudoku( dimension, grid)
+
+        # Act
+        # Set cell nummber for sudokus not in the middle => middle sudoku is changed
+        dut.Set( 0, 2, 2, 4)
+        dut.Set( 4, 0, 0, 1)
+        # Set cell nummber for sudoku in the middle => not in the middle sudokus changed
+        dut.Set( 2, 0, 3, 3)
+        dut.Set( 2, 2, 1, 2)
+        
+        resultSudokus = dut.Sudoku
+
+        # Assert
+        self.assertEqual(resultSudokus[0].Sudoku[2][2].Number, resultSudokus[2].Sudoku[0][0].Number)
+        self.assertEqual(resultSudokus[4].Sudoku[0][0].Number, resultSudokus[2].Sudoku[2][2].Number)
+        self.assertEqual(resultSudokus[2].Sudoku[0][3].Number, resultSudokus[1].Sudoku[2][1].Number)
+        self.assertEqual(resultSudokus[2].Sudoku[2][1].Number, resultSudokus[3].Sudoku[0][3].Number)
+
+    def create2x2plus1TestSamuraiSudoku(self, dimension, grid):
+        #    0 1 2 3 0 1 2 3
+        #   -----------------
+        # 0 !2.1!3.4|3.4!2.1!
+        # 1 !4.3!1.2|1.2!4.3!
+        # 2 !3.2! . ! . !1.4!
+        # 3 !1.4! . ! . !3.2!
+        #   !===!---!---!===!
+        # 0 !2.1! . ! . !4.3!
+        # 1 !4.3! . ! . !2.1!
+        # 2 !3.4!2.1|2.1!3.4!
+        # 3 !2.1!4.3|4.3!1.2!
+        sudoku= SamuraiSudoku( dimension, grid)
+        sudoku.Set( 0, 0, 0, 2)
+        sudoku.Set( 0, 0, 1, 1)
+        sudoku.Set( 0, 0, 2, 3)
+        sudoku.Set( 0, 0, 3, 4)
+        sudoku.Set( 0, 1, 0, 4)
+        sudoku.Set( 0, 1, 1, 3)
+        sudoku.Set( 0, 1, 2, 1)
+        sudoku.Set( 0, 1, 3, 2)
+        sudoku.Set( 0, 2, 0, 3)
+        sudoku.Set( 0, 2, 1, 2)
+        sudoku.Set( 0, 3, 0, 1)
+        sudoku.Set( 0, 3, 1, 4)
+        sudoku.Set( 1, 0, 0, 3)
+        sudoku.Set( 1, 0, 1, 4)
+        sudoku.Set( 1, 0, 2, 2)
+        sudoku.Set( 1, 0, 3, 1)
+        sudoku.Set( 1, 1, 0, 1)
+        sudoku.Set( 1, 1, 1, 2)
+        sudoku.Set( 1, 1, 2, 4)
+        sudoku.Set( 1, 1, 3, 3)
+        sudoku.Set( 1, 2, 2, 1)
+        sudoku.Set( 1, 2, 3, 4)
+        sudoku.Set( 1, 3, 2, 2)
+        sudoku.Set( 1, 3, 3, 2)
+        sudoku.Set( 3, 0, 0, 2)
+        sudoku.Set( 3, 0, 1, 1)
+        sudoku.Set( 3, 1, 0, 4)
+        sudoku.Set( 3, 1, 1, 3)
+        sudoku.Set( 3, 2, 0, 3)
+        sudoku.Set( 3, 2, 1, 4)
+        sudoku.Set( 3, 2, 2, 2)
+        sudoku.Set( 3, 2, 3, 1)
+        sudoku.Set( 3, 3, 0, 1)
+        sudoku.Set( 3, 3, 1, 2)
+        sudoku.Set( 3, 3, 0, 4)
+        sudoku.Set( 3, 3, 1, 3)
+        sudoku.Set( 4, 0, 2, 4)
+        sudoku.Set( 4, 0, 3, 3)
+        sudoku.Set( 4, 1, 2, 2)
+        sudoku.Set( 4, 1, 3, 1)
+        sudoku.Set( 4, 2, 0, 2)
+        sudoku.Set( 4, 2, 1, 1)
+        sudoku.Set( 4, 2, 2, 3)
+        sudoku.Set( 4, 2, 3, 4)
+        sudoku.Set( 4, 3, 0, 4)
+        sudoku.Set( 4, 3, 1, 3)
+        sudoku.Set( 4, 3, 2, 1)
+        sudoku.Set( 4, 3, 3, 2)
         sudoku.DoChange()
         return sudoku

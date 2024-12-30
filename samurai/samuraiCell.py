@@ -11,16 +11,16 @@ class SamuraiCell(BaseCell):
    
     @property
     def Number(self):
-        return BaseCell.Number
+        return self.number
     
     @Number.setter
     def Number(self, n):
-        self.Number = n
+        BaseCell.SetNumber(self, n)
         if self.hasShared:
             self.shared.SetSharedNumber(n)
     
     def SetSharedNumber(self, n):
-        self.number = n
+        BaseCell.SetNumber(self, n)
 
     def SetSingleCandidateToNewNumber(self):
         BaseCell.SetSingleCandidateToNewNumber(self)

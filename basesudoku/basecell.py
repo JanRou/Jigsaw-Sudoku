@@ -35,7 +35,10 @@ class BaseCell:
         return self.number
 
     @Number.setter
-    def Number(self, n):
+    def Number(self, n): # It doesn't work for inherited class calling base class property?
+        self.SetNumber(n)
+
+    def SetNumber(self, n):
         # Assigning to Number means the cell is marked changed and newNumber holds the solution for cell
         if 0 < n and n <= self.dimension:
             self.newNumber = n

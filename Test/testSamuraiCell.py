@@ -33,7 +33,7 @@ class TestSamuraiCell(unittest.TestCase):
             self.assertEqual(row, rowResult)
             self.assertEqual(column, columnResult)
             self.assertEqual(group, groupResult)
-            
+
     def testRemoveOk(self):
         # Arrange
         dimension = 4
@@ -135,80 +135,39 @@ class TestSamuraiCell(unittest.TestCase):
         self.assertEqual( 4, resultNewNumber)
         self.assertTrue( dut.Solved)
 
-    def testAppendSingleCandidatesNotChanged(self):
-        # Arrange
-        dimension = 4
-        group = 0
-        row = 0
-        column = 0
-        dut = SamuraiCell( dimension, row, column, group)
-        dut.Remove(1)
-        dut.DoChange()
-        singleCandidates = [2]
+    def testSetAndGetNumberWithSharedOk(self):
+            # Arrange
+            dimension = 4
+            group = 0
+            row = 0
+            column = 0
+            number = 2
+            dut = SamuraiCell( dimension, row, column, group)
 
-        # Act
-        result = dut.AppendSingleCandidates(singleCandidates)
+            sharedGroup = 0
+            sharedRow = 0
+            sharedColumn = 0
+            shared = SamuraiCell( dimension, sharedRow, sharedColumn, sharedGroup)
+            
+            dut.SetShared(shared)
+            shared.SetShared(dut)
 
-        # Assert
-        self.assertEqual( 3, len(result))
-        self.assertNotIn( 1, result)
-        self.assertIn( 2, result)
+            getResult1 = dut.Number
+            dut.Number = number
+            changeResult = dut.Changed
+            sharedChangeResult = dut.Changed
+            dut.DoChange()
+            getResult2 = dut.Number
+            sharedGetResult2 = dut.Number
+            solvedResult = dut.Solved
 
-    def testAppendSingleCandidatesChanged(self):
-        # Arrange
-        dimension = 4
-        group = 0
-        row = 0
-        column = 0
-        dut = SamuraiCell( dimension, row, column, group)
-        singleCandidates = [2]
-        dut.Remove(1)
-
-        # Act
-        result = dut.AppendSingleCandidates(singleCandidates)
-
-        # Assert
-        self.assertEqual( 3, len(result))
-        self.assertNotIn( 1, result)
-        self.assertIn( 2, result)
-
-
-    def testCountAndSetFirstCellForSingleCandidateNotChanged(self):
-        # Arrange
-        dimension = 4
-        group = 0
-        row = 0
-        column = 0
-        dut = SamuraiCell( dimension, row, column, group)
-        dut.Remove(1)
-        dut.DoChange()
-        firstCell = None
-        count = 0
-
-        # Act
-        resultCount, resultFirstCell = dut.CountAndSetFirstCellForSingleCandidate(2,count,firstCell)
-
-        # Assert
-        self.assertEqual( 1, resultCount)
-        self.assertIs( dut, resultFirstCell)
-
-    def testCountAndSetFirstCellForSingleCandidateChanged(self):
-        # Arrange
-        dimension = 4
-        group = 0
-        row = 0
-        column = 0
-        dut = SamuraiCell( dimension, row, column, group)
-        dut.Remove(1)
-        firstCell = None
-        count = 0
-
-        # Act
-        resultCount, resultFirstCell = dut.CountAndSetFirstCellForSingleCandidate(2,count,firstCell)
-
-        # Assert
-        self.assertEqual( 1, resultCount)
-        self.assertIs( dut, resultFirstCell)
+            # Assert
+            self.assertEqual( 0, getResult1)
+            self.assertTrue(changeResult)
+            self.assertTrue(sharedChangeResult)
+            self.assertEqual( number, getResult2)
+            self.assertEqual( number, sharedGetResult2)
+            self.assertTrue(solvedResult)
 
 
     # def test(self):

@@ -13,7 +13,7 @@ class SamuraiCell(BaseCell):
     def Number(self):
         return self.number
     
-    @Number.setter
+    @BaseCell.Number.setter
     def Number(self, n):
         BaseCell.SetNumber(self, n)
         if self.hasShared:
@@ -27,7 +27,7 @@ class SamuraiCell(BaseCell):
         if self.hasShared:
             self.shared.SharedSetSingleCandidateToNewNumber()
 
-    def ShareedSetSingleCandidateToNewNumber(self):
+    def SharedSetSingleCandidateToNewNumber(self):
         BaseCell.SetSingleCandidateToNewNumber(self)
 
     def DoChange(self):

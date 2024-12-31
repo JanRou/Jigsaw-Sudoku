@@ -87,7 +87,7 @@ class SamuraiSudoku():
 
     def RemoveCandidatesHook( self, cellWithCandidate, sudoku):
         for cell in sudoku.Groups[cellWithCandidate.group]:
-            cell.Remove(cellWithCandidate.number)
+            cell.Remove(cellWithCandidate.Number)
     
     def makeRemoveCandidatesHook( self, sudoku):
         return functools.partial(self.RemoveCandidatesHook, sudoku=sudoku)

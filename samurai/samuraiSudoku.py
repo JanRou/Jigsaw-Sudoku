@@ -23,15 +23,15 @@ class SamuraiSudoku():
             self.sudokus.append(sudoku)
         # TODO Set shared cells for all grids
         # Set upper left corner cells of sudoku 2 in the middle to be shared with sudoku 0 lower right corner        
-        self.setSharedCells(self.sudokus[2].Sudoku, 0, 0, self.sudokus[0].Sudoku, self.rho, self.rho)
+        self.SetSharedCells(self.sudokus[2].Sudoku, 0, 0, self.sudokus[0].Sudoku, self.rho, self.rho)
         # Set upper right corner cells of sudoku 2 in the middle to be shared with sudoku 1 lower left corner
-        self.setSharedCells(self.sudokus[2].Sudoku, 0, self.rho, self.sudokus[1].Sudoku, self.rho, 0 )
+        self.SetSharedCells(self.sudokus[2].Sudoku, 0, self.rho, self.sudokus[1].Sudoku, self.rho, 0 )
         # Set lower left corner cells of sudoku 2 in the middle to be shared with sudoku 3 upper right corner
-        self.setSharedCells(self.sudokus[2].Sudoku, self.rho, 0, self.sudokus[3].Sudoku, 0, self.rho )
+        self.SetSharedCells(self.sudokus[2].Sudoku, self.rho, 0, self.sudokus[3].Sudoku, 0, self.rho )
         # Set lower right corner cells of sudoku 2 in the middle to be shared with sudoku 4 upper left corner
-        self.setSharedCells(self.sudokus[2].Sudoku, self.rho, self.rho, self.sudokus[4].Sudoku, 0, 0 )
+        self.SetSharedCells(self.sudokus[2].Sudoku, self.rho, self.rho, self.sudokus[4].Sudoku, 0, 0 )
 
-    def setSharedCells(self, sudokuInMiddle, baseRowMiddle, baseColMiddle, sudokuLeaf, baseRow, baseCol):
+    def SetSharedCells(self, sudokuInMiddle, baseRowMiddle, baseColMiddle, sudokuLeaf, baseRow, baseCol):
         for r in range(self.rho):
             for c in range(self.rho):
                 cellMiddle =  sudokuInMiddle[r+baseRowMiddle][c+baseColMiddle]
@@ -86,8 +86,7 @@ class SamuraiSudoku():
         self.sudokus[sudokuIndex].Sudoku[row][col].Number = number
 
     def RemoveCandidatesHook( self, cellWithCandidate, sudoku):
-        for cell in sudoku.Groups[cellWithCandidate.group]:
-            cell.Remove(cellWithCandidate.Number)
+        sudoku.RemoveCandidatesInGroupForNumber(cellWithCandidate.group, cellWithCandidate.Number)
     
     def makeRemoveCandidatesHook( self, sudoku):
         return functools.partial(self.RemoveCandidatesHook, sudoku=sudoku)
@@ -99,27 +98,15 @@ class SamuraiSudoku():
             # TODO this is standard base sudoku rule. Samurai rule is different for shared corners
 
     def SetSinglesGroup(self, sudoku):
-        # Common with JigSaw
-        for group in range( 0, self.dimension):
-            singleCandidates = []
-            for cell in sudoku.groups[group]:
-                singleCandidates = cell.AppendSingleCandidates(singleCandidates)
-            for candidate in singleCandidates:
-                count = 0
-                firstCell = None
-                for cell in sudoku.groups[group]:
-                    count, firstCell = cell.CountAndSetFirstCellForSingleCandidate(candidate, count, firstCell)
-                if count == 1:
-                    # The candidate only appears in one cell for the group.
-                    firstCell.Number = candidate
+        sudoku.FindSinglesGroup()  # uses standard base hook
 
     def makeSetSinglesGroup( self, sudoku):
         return functools.partial(self.SetSinglesGroup, sudoku=sudoku)
 
     def SetSingles(self):
         for sudoku in self.sudokus:
-            setSinglesGroup = self.makeSetSinglesGroup(sudoku)
-            self.FindSinglesBase(setSinglesGroup)
+            setSinglesHook = self.makeSetSinglesGroup(sudoku)
+            sudoku.FindSinglesBase(setSinglesHook)
             # TODO this is standard base sudoku rule. Samurai rule is different for shared corners
 
     def GetState(self):

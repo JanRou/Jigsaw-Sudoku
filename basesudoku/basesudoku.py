@@ -67,7 +67,7 @@ class BaseSudoku:
     @property
     def Groups(self):
         return self.groups
-
+    
     def Set( self, row, col, number):
         self.sudoku[row][col].Number = number
 
@@ -83,6 +83,11 @@ class BaseSudoku:
         # remove candidates in column
         for column in range( 0, self.dimension):
             self.sudoku[row][column].Remove(number)        
+
+    def RemoveCandidatesInGroupForNumber( self, group, number):
+        # remove candidates in group for normal, jigsaw and samurai sudoku
+        for cell in self.groups[group]:
+            cell.Remove(number)
 
     def FindPossibleCandidatesBase(self, removeCandidatesHook):
         # find solved
@@ -124,6 +129,20 @@ class BaseSudoku:
                     count, firstCell = self.sudoku[row][column].CountAndSetFirstCellForSingleCandidate(candidate, count, firstCell)
                 if count == 1:
                     # The candidate only appears in one cell for the row.
+                    firstCell.Number = candidate
+
+    def FindSinglesGroup(self):
+        for group in self.Groups:
+            singleCandidates = []
+            for cell in group:
+                singleCandidates = cell.AppendSingleCandidates(singleCandidates)
+            for candidate in singleCandidates:
+                count = 0
+                firstCell = None
+                for cell in group:
+                    count, firstCell = cell.CountAndSetFirstCellForSingleCandidate(candidate, count, firstCell)
+                if count == 1:
+                    # The candidate only appears in one cell for the group.
                     firstCell.Number = candidate
 
     def FindSinglesBase(self, setSinglesHook):

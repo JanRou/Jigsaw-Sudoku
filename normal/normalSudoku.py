@@ -16,12 +16,6 @@ class NormalSudoku(BaseSudoku):
     def GetState(self):
         return self.state
     
-    def RemoveCandidatesInGroupForNumber( self, group, number):
-        # Common with JigSaw
-        # remove candidates in group
-        for cell in self.groups[group]:
-            cell.Remove(number)
-
     def RemoveCandidatesHook( self, cell):
         # Common with JigSaw
         self.RemoveCandidatesInGroupForNumber( cell.Group, cell.Number)
@@ -30,23 +24,8 @@ class NormalSudoku(BaseSudoku):
         # Common with JigSaw
         self.FindPossibleCandidatesBase(self.RemoveCandidatesHook)
 
-    def SetSinglesGroup(self):
-        # Common with JigSaw
-        for group in range( 0, self.dimension):
-            singleCandidates = []
-            for cell in self.groups[group]:
-                singleCandidates = cell.AppendSingleCandidates(singleCandidates)
-            for candidate in singleCandidates:
-                count = 0
-                firstCell = None
-                for cell in self.groups[group]:
-                    count, firstCell = cell.CountAndSetFirstCellForSingleCandidate(candidate, count, firstCell)
-                if count == 1:
-                    # The candidate only appears in one cell for the group.
-                    firstCell.Number = candidate
-
     def SetSingles(self):
-        self.FindSinglesBase(self.SetSinglesGroup)
+        self.FindSinglesBase(self.FindSinglesGroup) # uses standard base hook
 
     def TakeStep(self):
         # TODO add more rules and more states

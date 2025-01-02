@@ -7,18 +7,23 @@ class Window(tk.Toplevel):
     def __init__(self, parent, title, sudoku):
         super().__init__(parent)
         self.title(title)
-        self.minsize( 400,400)
-        self.maxsize( 1000,1200)
-        self.geometry("1000x600+50+50")
-        
-        self.mainFrame = ttk.Frame( self, width=1000, height=600)
-        self.mainFrame.grid(column=0, row=0, sticky=(tk.N, tk.W, tk.E, tk.S))
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
-
-        self.sudoku = sudoku        
-        self.leftFrame = ControlFrame( self, 200, 600, self.step)
-        self.rightFrame = SudokuFrame( self, 600, 600, sudoku, CellColours() )
+        self.sudoku = sudoku                
+        self.minsize( 400,400)
+        self.maxsize( 1300,1300)
+        self.geometry("1700x1300+50+50")
+        # TODO Refactor        
+        if sudoku.Type in ['Normal', 'Jigsaw', 'Hyper', 'X' ]:
+            self.mainFrame = ttk.Frame( self, width=1000, height=600)
+            self.mainFrame.grid(column=0, row=0, sticky=(tk.N, tk.W, tk.E, tk.S))
+            self.leftFrame = ControlFrame( self, 200, 600, self.step)        
+            self.rightFrame = CommonSudokuFrame( self, 600, 600, 0, 1, CellColours(), sudoku )
+        elif sudoku.Type in ['Samurai']:
+            self.mainFrame = ttk.Frame( self, width=1500, height=1300)
+            self.mainFrame.grid(column=0, row=0, sticky=(tk.N, tk.W, tk.E, tk.S))
+            self.leftFrame = ControlFrame( self, 200, 1300, self.step)        
+            self.rightFrame = SamuraiSudokuFrame( self, 1300, 1300, CellColours(), sudoku )
 
     def step(self):
         result = self.sudoku.TakeStep()
@@ -59,10 +64,10 @@ class ControlFrame(ttk.Frame):
         self.resultsVar.set(self.results)
         self.listbox.see("end")
 
-class SudokuFrame(ttk.Frame):
-    def __init__(self, root, w, h, sudoku, colours):
+class CommonSudokuFrame(ttk.Frame):
+    def __init__(self, root, w, h, gridRow, gridCol, colours, sudoku):
         super().__init__( root, width=w, height=h)
-        self.grid(row=0, column=1, padx=10, pady=5, sticky=(tk.N, tk.W, tk.E, tk.S))
+        self.grid(row=gridRow, column=gridCol, padx=10, pady=5, sticky=(tk.N, tk.W, tk.E, tk.S))
         self.sudoku = sudoku
         self.colours = colours
         self.sudokuView = []        
@@ -80,7 +85,52 @@ class SudokuFrame(ttk.Frame):
         for row in self.sudokuView:
             for cellView in row:
                 cellView.Show()        
-    
+
+class SamuraiSudokuFrame(ttk.Frame): # only grid=5, dimension=9
+    def __init__(self, root, w, h, colours, sudoku):
+        super().__init__( root, width=w, height=h)
+        self.grid(row=0, column=1, padx=10, pady=5, sticky=(tk.N, tk.W, tk.E, tk.S))
+        self.sudokuFrames = []
+        six = 0
+        for s in sudoku.Sudoku:
+            if six==0:
+                gridRow = 0
+                gridCol = 1
+            elif six==1:
+                gridRow = 0
+                gridCol = 2
+            elif six==2:
+                gridRow = 1
+                gridCol = 1
+            elif six==3:
+                gridRow = 2
+                gridCol = 1
+            elif six==4:
+                gridRow = 2
+                gridCol = 2
+
+            sf = CommonSudokuFrame( self, 600, 600, gridRow, gridCol, colours, s)
+            self.sudokuFrames.append(sf)
+
+        # self.grid(row=0, column=1, padx=10, pady=5, sticky=(tk.N, tk.W, tk.E, tk.S))
+        # self.sudoku = sudoku
+        # self.colours = colours
+        # self.sudokuView = []        
+        # gridDimension = self.sudoku.Dimension*2 + round(math.sqrt(self.dimension))
+        # for row in range(gridDimension):
+        #     rowView = []
+        #     for col in range(gridDimension):
+        #         cell = self.sudoku.GetCell(row,col)
+        #         cellView = SudokuCellView(self, self.colours.get(cell.Group), cell)
+        #         cellView.Show()
+        #         cellView.grid( row=row, column=col, padx=5, pady=5, ipadx=10, ipady=10) 
+        #         rowView.append(cellView)
+        #     self.sudokuView.append(rowView)
+
+    def show(self):
+        for sf in self.sudokuFrames:
+            sf.show()        
+
 class CellColours:
     def __init__(self):
         self.colours = []
@@ -101,8 +151,8 @@ class SudokuCellView(tk.Canvas):
     def __init__(self, root, bgcolour, cell, **kwargs):
         super().__init__( root, width=30, height=30, background=bgcolour, **kwargs)
         self.cell = cell
-        self.candidatesFont =  font.Font(family='Helvetica', size=10)
-        self.finalFont =  font.Font(family='Helvetica', size=16, )
+        self.candidatesFont = font.Font(family='Helvetica', size=10)
+        self.finalFont = font.Font(family='Helvetica', size=16, )
         self.rho = round(math.sqrt(cell.Dimension)) # rho x rho dimension of cell = 2, 3, 4 ...
 
     def Show(self):

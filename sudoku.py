@@ -4,6 +4,7 @@ from tkinter import font
 
 from jigsaw import jigsaw
 from normal import normal
+from samurai import samurai
 from window import Window
 
 class SudokuWindow(Tk):
@@ -22,8 +23,8 @@ class SudokuWindow(Tk):
         
         self.sudokuvar = StringVar()
         self.combo = ttk.Combobox( self.mainFrame, textvariable=self.sudokuvar)
-        # TODO self.combo['values'] = ('Normal', 'Jigsaw', 'Hyper', 'Samurai', 'X' )
-        self.combo['values'] = ('Normal', 'Jigsaw')
+        # TODO self.combo['values'] = ('Normal', 'Jigsaw', 'Hyper', 'X' )
+        self.combo['values'] = ('Normal', 'Jigsaw', 'Samurai')
         self.combo.grid(row=1, column=0, padx=5, pady=5)
         self.combo.state(["readonly"])
         self.combo.current(0)        
@@ -40,7 +41,7 @@ class SudokuWindow(Tk):
         elif choice == "Hyper":
             pass
         elif choice == "Samurai":
-            pass
+            sudoku = samurai.createSudoku()
         elif choice == "X":
             pass
         else:

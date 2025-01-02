@@ -7,7 +7,7 @@ class JigsawSudoku(BaseSudoku):
         # shape is d=nxn row and columns with group indexes 0 based, n=sqrt(d), 
         # where 0 is first group at upper left corner and n is last
         self.shape = shape # forms the jigsaw
-        super().__init__(dimension, self.createCell)
+        super().__init__(dimension, self.createCell, 'Jigsaw')
         shapeCheck = self.CheckShape(shape) # returns tuple (bool, message)
         if not shapeCheck[0]:
             raise ValueError("Shape check failed: " + shapeCheck[1])

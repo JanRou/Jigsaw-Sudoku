@@ -1,8 +1,9 @@
 import math
 
 class BaseSudoku:
-    def __init__(self, dimension, createCell):
+    def __init__(self, dimension, createCell, type):
         self.dimension = dimension # = rho*rho
+        self.type = type # Enumeration: ('Normal', 'Jigsaw', 'Hyper', 'Samurai', 'X' )
         self.sudoku = []  # the sudoku arranged by rows and columns
         self.groups = []  # the soudoku arranged by groups
         for g in range( 0, dimension):
@@ -18,6 +19,10 @@ class BaseSudoku:
     @property
     def Dimension(self):
         return self.dimension
+    
+    @property
+    def Type(self):
+        return self.type
     
     @property
     def Solved(self):

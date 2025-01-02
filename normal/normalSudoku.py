@@ -5,7 +5,7 @@ import math
 class NormalSudoku(BaseSudoku):
     def __init__(self, dimension):
         self.state = 0
-        super().__init__(dimension, self.createCell)
+        super().__init__(dimension, self.createCell, 'Normal')
 
     def createCell(self, dim, rw, cl):
         rho = round(math.sqrt(self.dimension))

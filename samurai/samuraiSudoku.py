@@ -17,9 +17,10 @@ class SamuraiSudoku():
         self.grid = grid
         self.state = 0        
         self.rho = round(math.sqrt(self.dimension)) 
+        self.type = 'Samurai'
         # Create grid sudokus
         for s in range(grid):
-            sudoku = BaseSudoku(dimension, self.createCell)
+            sudoku = BaseSudoku(dimension, self.createCell, self.type)
             self.sudokus.append(sudoku)
         # TODO Set shared cells for all grids
         # Set upper left corner cells of sudoku 2 in the middle to be shared with sudoku 0 lower right corner        
@@ -47,6 +48,10 @@ class SamuraiSudoku():
     @property
     def Dimension(self):
         return self.dimension
+
+    @property
+    def Type(self):
+        return self.type
 
     @property
     def Grid(self):

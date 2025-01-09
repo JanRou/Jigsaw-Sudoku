@@ -24,13 +24,13 @@ class SamuraiSudoku():
             self.sudokus.append(sudoku)
         # TODO Set shared cells for all grids
         # Set upper left corner cells of sudoku 2 in the middle to be shared with sudoku 0 lower right corner        
-        self.SetSharedCells(self.sudokus[2].Sudoku, 0, 0, self.sudokus[0].Sudoku, self.rho, self.rho)
+        self.SetSharedCells(self.sudokus[2].Sudoku, 0, 0, self.sudokus[0].Sudoku,  2*self.rho, 2*self.rho)
         # Set upper right corner cells of sudoku 2 in the middle to be shared with sudoku 1 lower left corner
-        self.SetSharedCells(self.sudokus[2].Sudoku, 0, self.rho, self.sudokus[1].Sudoku, self.rho, 0 )
+        self.SetSharedCells(self.sudokus[2].Sudoku, 0, 2*self.rho, self.sudokus[1].Sudoku, 2*self.rho, 0 )
         # Set lower left corner cells of sudoku 2 in the middle to be shared with sudoku 3 upper right corner
-        self.SetSharedCells(self.sudokus[2].Sudoku, self.rho, 0, self.sudokus[3].Sudoku, 0, self.rho )
+        self.SetSharedCells(self.sudokus[2].Sudoku, 2*self.rho, 0, self.sudokus[3].Sudoku, 0, 2*self.rho )
         # Set lower right corner cells of sudoku 2 in the middle to be shared with sudoku 4 upper left corner
-        self.SetSharedCells(self.sudokus[2].Sudoku, self.rho, self.rho, self.sudokus[4].Sudoku, 0, 0 )
+        self.SetSharedCells(self.sudokus[2].Sudoku, 2*self.rho, 2*self.rho, self.sudokus[4].Sudoku, 0, 0 )
 
     def SetSharedCells(self, sudokuInMiddle, baseRowMiddle, baseColMiddle, sudokuLeaf, baseRow, baseCol):
         for r in range(self.rho):
@@ -84,7 +84,7 @@ class SamuraiSudoku():
             sudoku.SetSingleCandidatesAsnewNumber()
 
     @property
-    def Sudoku(self):
+    def Sudokus(self):
         return self.sudokus
     
     def Set( self, sudokuIndex, row, col, number):

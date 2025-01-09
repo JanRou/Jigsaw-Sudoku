@@ -18,7 +18,7 @@ class TestSamuraiSudoku(unittest.TestCase):
         # Act
         resultDimension = dut.Dimension
         resultGrid = dut.Grid
-        resultSudokus = dut.Sudoku
+        resultSudokus = dut.Sudokus
 
         # Assert
         #    0 1 2 3 0 1 2 3
@@ -55,7 +55,7 @@ class TestSamuraiSudoku(unittest.TestCase):
         dut.Set( 2, 0, 3, 3)
         dut.Set( 2, 2, 1, 2)
         
-        resultSudokus = dut.Sudoku
+        resultSudokus = dut.Sudokus
 
         # Assert
         self.assertEqual(resultSudokus[0].Sudoku[2][2].Number, resultSudokus[2].Sudoku[0][0].Number)
@@ -69,14 +69,14 @@ class TestSamuraiSudoku(unittest.TestCase):
         grid = 5
         dut = self.create2x2plus1TestSamuraiSudoku( dimension, grid)
         # Set upper left cell in the group to 4
-        cell00Middle = dut.Sudoku[2].Sudoku[0][0]
+        cell00Middle = dut.Sudokus[2].Sudoku[0][0]
         cell00Middle.Number = 4
         cell00Middle.DoChange()
 
         #Act
-        dut.RemoveCandidatesHook(cell00Middle, dut.Sudoku[2])
+        dut.RemoveCandidatesHook(cell00Middle, dut.Sudokus[2])
         dut.DoChange()
-        resultUpperLeftSudoku = dut.Sudoku[0].Sudoku
+        resultUpperLeftSudoku = dut.Sudokus[0].Sudoku
 
         #Assert
         # Is 4 removed from the shared cells in the lower right group of the upper left sudoku?
@@ -92,7 +92,7 @@ class TestSamuraiSudoku(unittest.TestCase):
 
         #Act
         dut.FindPossibleCandidates()
-        result = dut.Sudoku[2].Sudoku
+        result = dut.Sudokus[2].Sudoku
 
         #Assert
         # Do all the cells of middle sudoku a single candidate?        
@@ -106,14 +106,14 @@ class TestSamuraiSudoku(unittest.TestCase):
         dimension = 4
         grid = 5
         dut = self.create2x2plus1TestSamuraiSudoku( dimension, grid)
-        dut.Sudoku[2].Sudoku[0][0].Remove(1)
-        dut.Sudoku[2].Sudoku[0][0].Remove(2)
-        dut.Sudoku[2].Sudoku[0][1].Remove(2)
-        dut.Sudoku[2].Sudoku[0][1].Remove(4)
-        dut.Sudoku[2].Sudoku[1][0].Remove(1)
-        dut.Sudoku[2].Sudoku[1][0].Remove(4)
-        dut.Sudoku[2].Sudoku[2][1].Remove(1)
-        dut.Sudoku[2].Sudoku[2][1].Remove(4)
+        dut.Sudokus[2].Sudoku[0][0].Remove(1)
+        dut.Sudokus[2].Sudoku[0][0].Remove(2)
+        dut.Sudokus[2].Sudoku[0][1].Remove(2)
+        dut.Sudokus[2].Sudoku[0][1].Remove(4)
+        dut.Sudokus[2].Sudoku[1][0].Remove(1)
+        dut.Sudokus[2].Sudoku[1][0].Remove(4)
+        dut.Sudokus[2].Sudoku[2][1].Remove(1)
+        dut.Sudokus[2].Sudoku[2][1].Remove(4)
         # Here are the candidates in middle sudoku  removed (it's not a real situation):
         # 0 ... omitted for breverity
         # 2 ... !(3,4).(1,3)    ! ...
@@ -123,8 +123,8 @@ class TestSamuraiSudoku(unittest.TestCase):
         #Act
         dut.SetSingles()
         dut.DoChange()
-        resultSolved = dut.Sudoku[0].Solved
-        resultSudoku = dut.Sudoku[0].Sudoku
+        resultSolved = dut.Sudokus[0].Solved
+        resultSudoku = dut.Sudokus[0].Sudoku
 
         #Assert
         # Here is the resulting sudoku in the middle:

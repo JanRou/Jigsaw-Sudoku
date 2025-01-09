@@ -5,25 +5,28 @@ import math
 
 class Window(tk.Toplevel):
     def __init__(self, parent, title, sudoku):
-        super().__init__(parent)
+        super().__init__(parent, relief='solid')
         self.title(title)
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
-        self.sudoku = sudoku                
-        self.minsize( 400,400)
-        self.maxsize( 1300,1300)
-        self.geometry("1700x1300+50+50")
+        self.sudoku = sudoku   
         # TODO Refactor        
         if sudoku.Type in ['Normal', 'Jigsaw', 'Hyper', 'X' ]:
-            self.mainFrame = ttk.Frame( self, width=1000, height=600)
+            self.minsize( 400,400)
+            self.maxsize( 1200, 800)
+            self.geometry("1000x600+50+50")
+            self.mainFrame = ttk.Frame( self, width=1000, height=600, relief='solid')
             self.mainFrame.grid(column=0, row=0, sticky=(tk.N, tk.W, tk.E, tk.S))
-            self.leftFrame = ControlFrame( self, 200, 600, self.step)        
-            self.rightFrame = CommonSudokuFrame( self, 600, 600, 0, 1, CellColours(), sudoku )
+            self.leftFrame = ControlFrame( self.mainFrame, 200, 600, title, self.step)        
+            self.rightFrame = CommonSudokuFrame( self.mainFrame, 600, 600, 0, 1, CellColours(), sudoku )
         elif sudoku.Type in ['Samurai']:
-            self.mainFrame = ttk.Frame( self, width=1500, height=1300)
+            self.minsize( 400,400)
+            self.maxsize( 1800, 1400)
+            self.geometry("1800x1300+50+50")
+            self.mainFrame = ttk.Frame( self, width=1400, height=1300, relief='solid')
             self.mainFrame.grid(column=0, row=0, sticky=(tk.N, tk.W, tk.E, tk.S))
-            self.leftFrame = ControlFrame( self, 200, 1300, self.step)        
-            self.rightFrame = SamuraiSudokuFrame( self, 1300, 1300, CellColours(), sudoku )
+            self.leftFrame = ControlFrame( self.mainFrame, 200, 1300, title, self.step)        
+            self.rightFrame = SamuraiSudokuFrame( self.mainFrame, 1800, 1400, CellColours(), sudoku )
 
     def step(self):
         result = self.sudoku.TakeStep()
@@ -32,11 +35,11 @@ class Window(tk.Toplevel):
         print(result)
 
 class ControlFrame(ttk.Frame):
-    def __init__(self, root, w, h, step):
-        super().__init__( root, width=w, height=h )
+    def __init__(self, root, w, h, title, step):
+        super().__init__( root, width=w, height=h, relief='solid')
         self.grid(row=0, column=0, padx=10, pady=5, sticky=(tk.N, tk.W, tk.E, tk.S))
 
-        self.headLabel=ttk.Label( self, text="Solve jigsaw sudoku")
+        self.headLabel=ttk.Label( self, text='Solve ' + title + ' sudoku')
         self.headLabel.grid(row=0, column=0, padx=5, pady=5)
 
         self.button = ttk.Button( self, text="Next step >", command=self.takeNextStep)
@@ -66,7 +69,7 @@ class ControlFrame(ttk.Frame):
 
 class CommonSudokuFrame(ttk.Frame):
     def __init__(self, root, w, h, gridRow, gridCol, colours, sudoku):
-        super().__init__( root, width=w, height=h)
+        super().__init__( root, width=w, height=h, relief='solid')
         self.grid(row=gridRow, column=gridCol, padx=10, pady=5, sticky=(tk.N, tk.W, tk.E, tk.S))
         self.sudoku = sudoku
         self.colours = colours
@@ -77,7 +80,7 @@ class CommonSudokuFrame(ttk.Frame):
                 cell = self.sudoku.GetCell(row,col)
                 cellView = SudokuCellView(self, self.colours.get(cell.Group), cell)
                 cellView.Show()
-                cellView.grid( row=row, column=col, padx=5, pady=5, ipadx=10, ipady=10) 
+                cellView.grid( row=row, column=col, padx=1, pady=1, ipadx=10, ipady=10) 
                 rowView.append(cellView)
             self.sudokuView.append(rowView)
 
@@ -88,28 +91,30 @@ class CommonSudokuFrame(ttk.Frame):
 
 class SamuraiSudokuFrame(ttk.Frame): # only grid=5, dimension=9
     def __init__(self, root, w, h, colours, sudoku):
-        super().__init__( root, width=w, height=h)
+        super().__init__( root, width=w, height=h, relief='solid')
         self.grid(row=0, column=1, padx=10, pady=5, sticky=(tk.N, tk.W, tk.E, tk.S))
         self.sudokuFrames = []
-        six = 0
-        for s in sudoku.Sudoku:
-            if six==0:
+        sudokuSix = 0
+        for sudoku in sudoku.Sudokus:
+            if sudokuSix==0:
                 gridRow = 0
-                gridCol = 1
-            elif six==1:
+                gridCol = 0
+            elif sudokuSix==1:
                 gridRow = 0
                 gridCol = 2
-            elif six==2:
+            elif sudokuSix==2:
                 gridRow = 1
                 gridCol = 1
-            elif six==3:
+            elif sudokuSix==3:
                 gridRow = 2
-                gridCol = 1
-            elif six==4:
+                gridCol = 0
+            elif sudokuSix==4:
                 gridRow = 2
                 gridCol = 2
 
-            sf = CommonSudokuFrame( self, 600, 600, gridRow, gridCol, colours, s)
+            sudokuSix += 1
+
+            sf = CommonSudokuFrame( self, 600, 600, gridRow, gridCol, colours, sudoku)
             self.sudokuFrames.append(sf)
 
         # self.grid(row=0, column=1, padx=10, pady=5, sticky=(tk.N, tk.W, tk.E, tk.S))
@@ -149,19 +154,19 @@ class CellColours:
 
 class SudokuCellView(tk.Canvas):
     def __init__(self, root, bgcolour, cell, **kwargs):
-        super().__init__( root, width=30, height=30, background=bgcolour, **kwargs)
+        super().__init__( root, width=20, height=20, relief='solid',  background=bgcolour, **kwargs)
         self.cell = cell
-        self.candidatesFont = font.Font(family='Helvetica', size=10)
-        self.finalFont = font.Font(family='Helvetica', size=16, )
+        self.candidatesFont = font.Font(family='Helvetica', size=7)
+        self.finalFont = font.Font(family='Helvetica', size=12, )
         self.rho = round(math.sqrt(cell.Dimension)) # rho x rho dimension of cell = 2, 3, 4 ...
 
     def Show(self):
         self.delete('all')
         if self.cell.Solved:
             # display final number in black in center
-            self.create_text( 20, 15 , text=str(self.cell.Number), anchor='nw', font=self.finalFont, fill='black')
+            self.create_text( 16, 13 , text=str(self.cell.Number), anchor='nw', font=self.finalFont, fill='black')
         elif self.cell.Changed and self.cell.NewNumber != 0:
-            self.create_text( 20, 15 , text=str(self.cell.NewNumber), anchor='nw', font=self.finalFont, fill='lightblue')
+            self.create_text( 16, 13 , text=str(self.cell.NewNumber), anchor='nw', font=self.finalFont, fill='lightblue')
         else:
             candidates = self.cell.Candidates
             if self.cell.Changed:
@@ -170,4 +175,4 @@ class SudokuCellView(tk.Canvas):
                 for j in range(self.rho):
                     c = i*self.rho + j + 1
                     if c in candidates:
-                        self.create_text( 15*i + 8, 15*j + 5 , text=str(c), anchor='nw', font=self.candidatesFont, fill='black')
+                        self.create_text( 14*i + 5, 13*j + 4 , text=str(c), anchor='nw', font=self.candidatesFont, fill='black')

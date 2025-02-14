@@ -5,7 +5,7 @@ from tkinter import font
 from jigsaw import jigsaw
 from normal import normal
 from samurai import samurai
-from window import Window
+from Window.window import Window
 
 class SudokuWindow(Tk):
     def __init__(self):

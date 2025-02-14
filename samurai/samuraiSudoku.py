@@ -87,8 +87,8 @@ class SamuraiSudoku():
     def Sudokus(self):
         return self.sudokus
     
-    def Set( self, sudokuIndex, row, col, number):
-        self.sudokus[sudokuIndex].Sudoku[row][col].Number = number
+    def Set( self, sudokuIndex, row, col, number, isInitial=False):
+        self.sudokus[sudokuIndex].Sudoku[row][col].SetNumber(number, isInitial)
 
     def RemoveCandidatesHook( self, cellWithCandidate, sudoku):
         sudoku.RemoveCandidatesInGroupForNumber(cellWithCandidate.group, cellWithCandidate.Number)

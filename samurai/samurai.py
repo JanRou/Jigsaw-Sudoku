@@ -64,7 +64,7 @@ def createSudoku():
         for row in range(dimension):
             for col in range(dimension):
                 if tempsudokus[sudokuIx] != [] and tempsudokus[sudokuIx][row][col]!=0:
-                    sudoku.Set( sudokuIx, row, col, tempsudokus[sudokuIx][row][col])
+                    sudoku.Set( sudokuIx, row, col, tempsudokus[sudokuIx][row][col], True)
 
     sudoku.DoChange() # set the changes
     return sudoku

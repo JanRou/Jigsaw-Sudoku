@@ -33,7 +33,7 @@ class Window(tk.Toplevel):
 
     def step(self):
         result = self.sudoku.TakeStep()
-        self.rightFrame.Show()
+        self.rightFrame.show()
         self.leftFrame.showResult(result)
         print(result)
 

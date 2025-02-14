@@ -13,6 +13,7 @@ class BaseCell:
         for col in range(1, 1+self.dimension):
             self.candidates.append(col)
         self.group = group
+        self.isInitial = False # is true, when the number is given for the puzzle
 
     @property
     def Dimension(self):
@@ -38,18 +39,22 @@ class BaseCell:
     def Number(self, n): # It doesn't work for inherited class calling base class property?
         self.SetNumber(n)
 
-    def SetNumber(self, n):
+    def SetNumber(self, n, isInitial=False):
         # Assigning to Number means the cell is marked changed and newNumber holds the solution for cell
-        if 0 < n and n <= self.dimension:
-            self.newNumber = n
-            # clear list of candidates and set the only one
-            self.candidates.clear()            
-            for i in range(0, self.dimension):
-                self.candidates.append(0)
-            self.candidates[n-1] = n
-            self.changed = True
+        if isInitial:
+            self.isInitial = isInitial
+            self.number = n
         else:
-            raise ValueError
+            if 0 < n and n <= self.dimension:
+                self.newNumber = n
+                # clear list of candidates and set the only one
+                self.candidates.clear()            
+                for i in range(0, self.dimension):
+                    self.candidates.append(0)
+                self.candidates[n-1] = n
+                self.changed = True
+            else:
+                raise ValueError
 
     @property
     def NewNumber(self):
@@ -61,7 +66,11 @@ class BaseCell:
     @property
     def Solved(self):
         return self.number != 0
-    
+
+    @property
+    def IsInitial(self):
+        return self.isInitial
+
     @property
     def Changed(self):
         return self.changed

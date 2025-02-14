@@ -9,18 +9,16 @@ class CommonSudokuFrame(ttk.Frame):
         self.grid(row=gridRow, column=gridCol, padx=10, pady=5, sticky=(tk.N, tk.W, tk.E, tk.S))
         self.sudoku = sudoku
         self.colours = colours
-        self.sudokuView = []
+        self.sudokuCellViews = []
         for row in range(self.sudoku.Dimension):
             rowView = []
             for col in range(self.sudoku.Dimension):
                 cell = self.sudoku.GetCell(row,col)
                 cellView = SudokuCellView(self, self.colours.get(cell.Group), cell)
-                cellView.Show()
+                cellView.show()
                 cellView.grid( row=row, column=col, padx=1, pady=1, ipadx=10, ipady=10)
-                rowView.append(cellView)
-            self.sudokuView.append(rowView)
+                self.sudokuCellViews.append(cellView)
 
     def show(self):
-        for row in self.sudokuView:
-            for cellView in row:
-                cellView.Show()
+        for cellView in self.sudokuCellViews:
+            cellView.show()

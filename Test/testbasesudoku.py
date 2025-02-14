@@ -375,7 +375,7 @@ class TestBaseSudoku(unittest.TestCase):
         # 2 ! . ! .1!  !(1,2,3,4)!(1,2,3,4)!(1,2,3,4).-        !
         # 3 ! .4! . !  !(1,2,3,4)!-        !(1,2,3,4).(1,2,3,4)!
         #   ---------  -----------------------------------------
-        sudoku= BaseSudoku( dimension, createCell)
+        sudoku= BaseSudoku( dimension, createCell, 'Test')
         sudoku.Set( 0, 2, 3)
         sudoku.Set( 1, 0, 4)
         sudoku.Set( 2, 3, 1)
@@ -383,5 +383,3 @@ class TestBaseSudoku(unittest.TestCase):
         if change:
             sudoku.DoChange()
         return sudoku
-    
-

@@ -26,7 +26,6 @@ class BaseSudoku:
     
     @property
     def Solved(self):
-        # TODO check that the sudoku is really solved not just all cells have a number set!
         result = True
         for r in range(self.dimension):
             for c in range(self.dimension):
@@ -73,8 +72,8 @@ class BaseSudoku:
     def Groups(self):
         return self.groups
     
-    def Set( self, row, col, number):
-        self.sudoku[row][col].Number = number
+    def Set( self, row, col, number, isInitial=False):
+        self.sudoku[row][col].SetNumber(number, isInitial)
 
     def Get( self, row, col):
         return self.sudoku[row][col].Number

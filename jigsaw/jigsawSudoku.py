@@ -55,9 +55,10 @@ class JigsawSudoku(BaseSudoku):
 
     def SetSingles(self):
         self.FindSinglesBase(self.FindSinglesGroup) # uses standard base hook
-        
+
+    # TODO DRY - all sudokus do this
     def TakeStep(self):
-        self.steps = { 0: 'Find single candidate as solution', 1: 'Find possible candidates'
+        self.steps = { 0: 'Set single candidate as solution in cells', 1: 'Find possible candidates'
                 , 2: 'Find single candidate in row, column and group', 3: 'Update sudoku'
                 , 4: "Done, solved"}
         if not self.Solved:

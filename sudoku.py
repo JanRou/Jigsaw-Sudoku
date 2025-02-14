@@ -53,6 +53,3 @@ class SudokuWindow(Tk):
 #main
 mainWindow = SudokuWindow()
 mainWindow.mainloop()
-
-    
-
